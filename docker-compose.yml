@@ -1,0 +1,19 @@
+services:
+  web:
+    build: ./frontend
+    depends_on: [pirots-api]
+    restart: unless-stopped
+    networks: [default, dokploy-network]
+
+  pirots-api:
+    build: ./backend
+    environment:
+      PORT: 3000
+      DATABASE_URL: ${DATABASE_URL}
+      SESSION_SECRET: ${SESSION_SECRET}
+    restart: unless-stopped
+    networks: [default, dokploy-network]
+
+networks:
+  dokploy-network:
+    external: true
