@@ -12,10 +12,16 @@ const board = (async () => {
 
     const board_size = app.screen.width * 0.5;
     const tile_size = board_size / 8;
+    const diamond_size = tile_size * 0.7;
     const board_x_start = app.screen.width * 0.25;
     const board_y_start = (app.screen.height / 2) - (board_size / 2);
     const tile_img = await Assets.load('Assets/Sprites/slots_tile.png');
+    const blue_diamond = await Assets.load('Assets/Sprites/slots_diamond_blue.png');
+    const red_diamond = await Assets.load('Assets/Sprites/slots_diamond_red.png');
+    const green_diamond = await Assets.load('Assets/Sprites/slots_diamond_green.png');
+    const orange_diamond = await Assets.load('Assets/Sprites/slots_diamond_orange.png');
     const tiles = [];
+    const diamonds = [blue_diamond, red_diamond, green_diamond, orange_diamond];
 
     // tile placing logic
     for (let y = 0; y < 6; y++) {
@@ -23,10 +29,25 @@ const board = (async () => {
             const tile = new Sprite(tile_img);
             tile.width = tile_size;
             tile.height = tile_size;
-            tile.position.x =  board_x_start + x * tile_size + tile_size;
-            tile.position.y =  board_y_start + y * tile_size + tile_size;
+            tile.position.x = board_x_start + x * tile_size + tile_size;
+            tile.position.y = board_y_start + y * tile_size + tile_size;
             app.stage.addChild(tile);
             tiles.push(tile);
+            }
+    }
+
+ // diamond placing logic
+    for (let y = 0; y < 6; y++) {
+        for (let x = 0; x < 6; x++) {
+            const rand = Math.floor(Math.random()*4);
+            const diamond_img = diamonds[rand] ;
+            const diamond_sprite = new Sprite(diamond_img);
+            diamond_sprite.width = diamond_size;
+            diamond_sprite.height = diamond_size;
+            diamond_sprite.position.x = board_x_start + x * tile_size + tile_size * 1.5 - diamond_size * 0.5;
+            diamond_sprite.position.y = board_y_start + y * tile_size + tile_size * 1.5 - diamond_size * 0.5;
+            app.stage.addChild(diamond_sprite);
+            tiles.push(diamond_sprite);
             }
     }
 })();
