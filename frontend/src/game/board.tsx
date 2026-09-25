@@ -36,6 +36,12 @@ const board = (async () => {
             }
     }
 
+    const spin_img = await Assets.load('Assets/Sprites/slots_spin_button.png');
+    const spin_button = new Sprite(spin_img);
+    spin_button.position.x = board_x_start + board_size;
+    spin_button.position.y = (app.screen.height / 2) - (spin_button.height / 2);
+    app.stage.addChild(spin_button);
+
  // diamond placing logic
     for (let y = 0; y < 6; y++) {
         for (let x = 0; x < 6; x++) {
