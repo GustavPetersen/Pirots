@@ -2,7 +2,10 @@ import { useState } from 'react'
 import heroImg from './assets/hero.png'
 import reactLogo from './assets/react.svg'
 import viteLogo from './assets/vite.svg'
+import {Howl} from 'howler'
 import './App.css'
+
+const jackpotSound = new Howl({src: ['Assets/Sounds/JACKPOT.mp3']})
 
 function App() {
   const [count, setCount] = useState(0)
@@ -24,7 +27,10 @@ function App() {
         <button
           type="button"
           className="counter"
-          onClick={() => setCount((count) => count + 1)}
+          onClick={() => {
+            jackpotSound.play()
+            setCount((count) => count + 1)}
+          }
         >
           Count is {count}
         </button>
