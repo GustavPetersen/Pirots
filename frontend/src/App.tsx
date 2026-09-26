@@ -1,8 +1,8 @@
-import board  from './game/board';
-import './App.css'
+import Game from "./pages/Game";
+import "./App.css";
 
 function App() {
-  return board
+  return <Game />;
 }
 
-export default App
+export default App;
