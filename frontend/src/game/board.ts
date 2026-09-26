@@ -6,10 +6,12 @@ export default async function createBoard(container: HTMLElement): Promise<Appli
     await app.init( {backgroundColor: 0x1099bb, resizeTo: window});
     container.appendChild(app.canvas);
 
-    const jackpotSound = new Howl({src: ['Assets/Sounds/JACKPOT.mp3']});
+    const jackpotSound = new Howl({src: ['assets/sounds/JACKPOT.mp3']});
     
-    const background_img = await Assets.load('Assets/Sprites/slots_background.png');
-    app.stage.addChild(new Sprite(background_img));
+    const background_img = await Assets.load('assets/sprites/slots_background.png');
+    const background = new Sprite(background_img);
+    background.setSize(app.screen.width, app.screen.height);
+    app.stage.addChild(background);
 
     const board_size = app.screen.width * 0.5;
     const tile_size = board_size / 8;
@@ -17,12 +19,12 @@ export default async function createBoard(container: HTMLElement): Promise<Appli
     const board_x_start = app.screen.width * 0.25; // We have to rename these at some point!
     const board_y_start = (app.screen.height / 2) - (board_size / 2); // We have to rename these at some point!
 
-    const tile_img = await Assets.load('Assets/Sprites/slots_tile.png');
+    const tile_img = await Assets.load('assets/sprites/slots_tile.png');
     const diamond_images = await Promise.all([
-        Assets.load('Assets/Sprites/slots_diamond_blue.png'),
-        Assets.load('Assets/Sprites/slots_diamond_red.png'),
-        Assets.load('Assets/Sprites/slots_diamond_green.png'),
-        Assets.load('Assets/Sprites/slots_diamond_orange.png'),
+        Assets.load('assets/sprites/slots_diamond_blue.png'),
+        Assets.load('assets/sprites/slots_diamond_red.png'),
+        Assets.load('assets/sprites/slots_diamond_green.png'),
+        Assets.load('assets/sprites/slots_diamond_orange.png'),
     ]);
     const diamonds: Sprite[] = [];
 
@@ -63,7 +65,7 @@ export default async function createBoard(container: HTMLElement): Promise<Appli
     }
 
     // spin button
-    const spin_img = await Assets.load('Assets/Sprites/slots_spin_button.png');
+    const spin_img = await Assets.load('assets/sprites/slots_spin_button.png');
     const spin_button = new Sprite(spin_img);
     spin_button.position.set(board_x_start + board_size, app.screen.height / 2 - spin_button.height / 2);
     spin_button.eventMode = 'static';

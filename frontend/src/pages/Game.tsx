@@ -15,7 +15,7 @@ function Game() {
       } else {
         app = a;
       }
-    });
+    }).catch((err) => console.error('createBoard failed:', err));
 
     return () => {
       cancelled = true;
