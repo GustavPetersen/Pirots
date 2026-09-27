@@ -3,7 +3,7 @@
 ## Frontend
 The web client for our Pirots-style slot game. It renders the game, handles login and accounts, and talks to the backend API.
 
-#### Stack
+### Stack
 - **React + TypeScript** for pages and UI
 - **Vite** for the dev server and builds
 - **PixiJS** for rendering the game canvas
@@ -12,14 +12,13 @@ The web client for our Pirots-style slot game. It renders the game, handles logi
 - **React Router** for routing
 - **TanStack Query** for API calls and caching
 
-#### Getting Started
-Requires Node.js 20 or newer.
+### Development
+Requires Docker.
 ```bash
-cd frontend
-npm install
-npm run dev
+cp .env.dev.example .env
+docker compose -f docker-compose-dev.yml up --build --watch
 ```
-The app runs at http://localhost:5173.
+The app runs at http://localhost:5173. Changes to files under the frontend/src directory are immediately synced to the container and hot reloaded (may require f5 in the browser). If any changes ar are made to the frontend outside the source folder, the docker image must be rebuilt (just run the command again).
 
 #### Scripts
  
@@ -42,11 +41,19 @@ frontend/
     ├── pages/       # Route pages (login, lobby, play)
     └── main.tsx     # Entry point
 ```
+
+### Production
+Requires docker. 
+```bash
+cp .env.prod.example .env
+docker compose -f docker-compose-prod.yml up --build
+```
+The production image build pipeline is now seperate from the the dev pipeline. It is currently not implemented, instead just being identical to the old Docker compose setup. If you for any reason wish to run the old compose file, run this.
  
 ## Backend
 The API server for the game. It handles accounts and sessions, the wallet, spins and leaderboards, and runs the game engine, so all spin outcomes are decided here and never in the browser.
 
-#### Stack
+### Stack
 - **Go** for the server
 - **chi** for routing and middleware
 - **pgx** as the PostgreSQL driver
@@ -56,33 +63,14 @@ The API server for the game. It handles accounts and sessions, the wallet, spins
 - **argon2id** for password hashing
 - **PostgreSQL** as the database
 
-#### Getting Started
-Requires Go and Docker.
-
-Start a local database:
+### Development
+Requires Docker. Note that the below commands are exactly equal to the ones from the frontend. This is because the docker-compose-dev.yml file sets up the complete system (both frontend and backend). 
 ```bash
-docker run -d --name pirots-db -p 5432:5432 \
-  -e POSTGRES_PASSWORD=dev -e POSTGRES_DB=pirots postgres:17-alpine
+cp .env.dev.example .env
+docker compose -f docker-compose-dev.yml up --build --watch
 ```
-
-Run the server:
-```bash
-cd backend
-cp ../.env.example .env
-DATABASE_URL=postgres://postgres:dev@localhost:5432/pirots 
-go run ./cmd/server
-```
-
 The API runs at http://localhost:3000. Check it with `curl localhost:3000/api/health`.
-
-#### Environment variables
-
-| Variable         | What it is                                  |
-| ---------------- | ------------------------------------------- |
-| `DATABASE_URL`   | PostgreSQL connection string                |
-| `SESSION_SECRET` | Secret for signing session cookies          |
-| `PORT`           | Port to listen on (defaults to `3000`)      |
-
+Changes to files under the backend/ directory are immediately synced to the container and hot reloaded.
 
 #### Commands
 
@@ -111,3 +99,11 @@ backend/
     ├── engine/      # Game logic (no HTTP or DB code)
     └── store/       # sqlc-generated database code
 ```
+
+### Production
+Requires docker. 
+```bash
+cp .env.prod.example .env
+docker compose -f docker-compose-prod.yml up --build
+```
+Again these commands are equal to the ones from the frontend, due to docker-compose-prod.yml also orchestrating the entire system. 
