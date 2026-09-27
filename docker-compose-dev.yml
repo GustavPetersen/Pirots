@@ -1,0 +1,53 @@
+
+services:
+  pirots-db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB_NAME} 
+    volumes:
+      - pirots_data:/var/lib/postgresql/data
+    networks: [default]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB_NAME}"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  pirots-api:
+    build: 
+      context: ./backend
+      target: development
+    depends_on: 
+      pirots-db:
+        condition: service_healthy
+    environment:
+      PORT: 3000
+      DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@pirots-db:5432/${POSTGRES_DB_NAME}
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    networks: [default]
+    develop:
+      watch:
+        - action: sync+restart
+          path: ./backend
+          target: /src
+
+  web:
+    build: 
+      context: ./frontend
+      target: development
+    depends_on: [pirots-api]
+    networks: [default]
+    ports: 
+      - "5173:5173"
+    develop:
+      watch:
+        - action: sync
+          path: ./frontend/src
+          target: /app/src
+
+volumes:
+  pirots_data:
