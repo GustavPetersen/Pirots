@@ -8,19 +8,19 @@ export default async function createBoard(container: HTMLElement): Promise<Appli
 
     const jackpotSound = new Howl({src: ['Assets/Sounds/JACKPOT.mp3']});
     
-    const background_img = await Assets.load('Assets/Sprites/slots_background.png');
-    const background = new Sprite(background_img);
+    const backgroundImg = await Assets.load('Assets/Sprites/slots_background.png');
+    const background = new Sprite(backgroundImg);
     background.setSize(app.screen.width, app.screen.height);
     app.stage.addChild(background);
 
-    const board_size = app.screen.width * 0.5;
-    const tile_size = board_size / 8;
-    const diamond_size = tile_size * 0.7;
-    const board_x_start = app.screen.width * 0.25; // We have to rename these at some point!
-    const board_y_start = (app.screen.height / 2) - (board_size / 2); // We have to rename these at some point!
+    const boardSize = app.screen.width * 0.5;
+    const tileSize = boardSize / 8;
+    const diamondSize = tileSize * 0.7;
+    const boardStartX = app.screen.width * 0.25; // We have to rename these at some point!
+    const boardStartY = (app.screen.height / 2) - (boardSize / 2); // We have to rename these at some point!
 
-    const tile_img = await Assets.load('Assets/Sprites/slots_tile.png');
-    const diamond_images = await Promise.all([
+    const tileImg = await Assets.load('Assets/Sprites/slots_tile.png');
+    const diamondImgs = await Promise.all([
         Assets.load('Assets/Sprites/slots_diamond_blue.png'),
         Assets.load('Assets/Sprites/slots_diamond_red.png'),
         Assets.load('Assets/Sprites/slots_diamond_green.png'),
@@ -31,27 +31,27 @@ export default async function createBoard(container: HTMLElement): Promise<Appli
     // tiles
     for (let y = 0; y < 6; y++) {
         for (let x = 0; x < 6; x++) {
-            const tile = new Sprite(tile_img);
-            tile.width = tile_size;
-            tile.height = tile_size;
+            const tile = new Sprite(tileImg);
+            tile.width = tileSize;
+            tile.height = tileSize;
             tile.position.set(
-                board_x_start + x * tile_size + tile_size,
-                board_y_start + y * tile_size + tile_size,
+                boardStartX + x * tileSize + tileSize,
+                boardStartY + y * tileSize + tileSize,
             );
             app.stage.addChild(tile);
         }
     }
 
     // diamonds
-    const randomDiamond = () => diamond_images[Math.floor(Math.random() * 4)];
+    const randomDiamond = () => diamondImgs[Math.floor(Math.random() * 4)];
     for (let y = 0; y < 6; y++) {
         for (let x = 0; x < 6; x++) {
             const d = new Sprite(randomDiamond());
-            d.width = diamond_size;
-            d.height = diamond_size;
+            d.width = diamondSize;
+            d.height = diamondSize;
             d.position.set(
-                board_x_start + x * tile_size + tile_size * 1.5 - diamond_size * 0.5,
-                board_y_start + y * tile_size + tile_size * 1.5 - diamond_size * 0.5,
+                boardStartX + x * tileSize + tileSize * 1.5 - diamondSize * 0.5,
+                boardStartY + y * tileSize + tileSize * 1.5 - diamondSize * 0.5,
             );
             app.stage.addChild(d);
             diamonds.push(d);
@@ -65,16 +65,16 @@ export default async function createBoard(container: HTMLElement): Promise<Appli
     }
 
     // spin button
-    const spin_img = await Assets.load('Assets/Sprites/slots_spin_button.png');
-    const spin_button = new Sprite(spin_img);
-    spin_button.position.set(board_x_start + board_size, app.screen.height / 2 - spin_button.height / 2);
-    spin_button.eventMode = 'static';
-    spin_button.cursor = 'pointer';
-    spin_button.on('pointerdown', () => {
-        jackpotSound.play();
+    const spinImg = await Assets.load('Assets/Sprites/slots_spin_button.png');
+    const spinButton = new Sprite(spinImg);
+    spinButton.position.set(boardStartX + boardSize, app.screen.height / 2 - spinButton.height / 2);
+    spinButton.eventMode = 'static';
+    spinButton.cursor = 'pointer';
+    spinButton.on('pointerdown', () => {
+        // jackpotSound.play();
         spin();
     });
-    app.stage.addChild(spin_button);
+    app.stage.addChild(spinButton);
 
     return app;
 }
