@@ -1,5 +1,6 @@
 import { QueryClient } from '@tanstack/react-query';
 import { Application, Container, Sprite, Assets, Texture } from 'pixi.js';
+import { Howl } from 'howler';
 import { getDiamonds } from '../api/queries';
 
 export default async function createBoard(container: HTMLElement): Promise<Application> {
@@ -92,6 +93,7 @@ export default async function createBoard(container: HTMLElement): Promise<Appli
     );
 
     // Setup api call on button click
+    const jackpotSound = new Howl({src: ['Assets/Sounds/JACKPOT.mp3']});
     const queryClient = new QueryClient();
     const dTextures: Texture[] = [
         Texture.from('d_green'),
@@ -101,6 +103,8 @@ export default async function createBoard(container: HTMLElement): Promise<Appli
     ];
 
     const spin = async () => {
+        jackpotSound.play();
+        
         const diamonds = await queryClient.query({
             queryKey: ["getDiamonds"],
             queryFn: getDiamonds,
@@ -119,7 +123,7 @@ export default async function createBoard(container: HTMLElement): Promise<Appli
             // Only runs on first spin
             const new_diamond = Sprite.from(newTexture);
             new_diamond.label = 'tile_fg';
-            new_diamond.setSize(tileSize*0.8);
+            new_diamond.setSize(tileSize * 0.8);
 
             new_diamond.anchor.set(0.5);
             new_diamond.position.set(
