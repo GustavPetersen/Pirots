@@ -13,6 +13,7 @@ export default async function createBoard(container: HTMLElement): Promise<Appli
         {alias: 'tile_mid', src: 'slots_tile.png'},
         {alias: 'tile_corner', src: 'slots_tile_corner.png'},
         {alias: 'tile_straight', src: 'slots_tile_straight.png'},
+        {alias: 'spin_button', src: 'slots_spin_button.png'},
     ]);
 
     // Create background
@@ -49,7 +50,7 @@ export default async function createBoard(container: HTMLElement): Promise<Appli
 
             const tile = Sprite.from(texture);
             tile.position.set(tileSize * i, tileSize * j);
-            tile.setSize(tileSize, tileSize);
+            tile.setSize(tileSize);
             tiles.addChild(tile);
         }
     }
@@ -58,9 +59,28 @@ export default async function createBoard(container: HTMLElement): Promise<Appli
     tiles.position.set(
         background.width / 2 - tiles.width / 2,
         background.height / 2 - tiles.height / 2
-    )
+    );
     
     app.stage.addChild(tiles);
+
+    // Create spin button
+    const spinButton = Sprite.from('spin_button');
+    spinButton.anchor.set(0.5);
+
+    const tilesEndX = tiles.x + tiles.width;
+    spinButton.position.set(
+        tilesEndX + (background.width - tilesEndX) / 2,
+        background.height / 2
+    );
+
+    spinButton.eventMode = 'static';
+    spinButton.cursor = 'pointer';
+    spinButton.on('pointerdown', () => {
+        //jackpotSound.play();
+        //spin();
+    });
+
+    app.stage.addChild(spinButton);
 
     return app;
 }
