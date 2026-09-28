@@ -104,7 +104,7 @@ export default async function createBoard(container: HTMLElement): Promise<Appli
 
     const spin = async () => {
         jackpotSound.play();
-        
+
         const diamonds = await queryClient.query({
             queryKey: ["getDiamonds"],
             queryFn: getDiamonds,
@@ -121,17 +121,17 @@ export default async function createBoard(container: HTMLElement): Promise<Appli
             }
 
             // Only runs on first spin
-            const new_diamond = Sprite.from(newTexture);
-            new_diamond.label = 'tile_fg';
-            new_diamond.setSize(tileSize * 0.8);
+            const newDiamond = Sprite.from(newTexture);
+            newDiamond.label = 'tile_fg';
+            newDiamond.setSize(tileSize * 0.8);
 
-            new_diamond.anchor.set(0.5);
-            new_diamond.position.set(
+            newDiamond.anchor.set(0.5);
+            newDiamond.position.set(
                 tile.width / 2,
                 tile.height / 2,
             );
 
-            tile.addChild(new_diamond);
+            tile.addChild(newDiamond);
         }
     };
 
