@@ -15,6 +15,6 @@ RUN CGO_ENABLED=0 go build -ldflags="-s -w" -o /server ./cmd/server
 
 # Production serve
 FROM gcr.io/distroless/static-debian12:nonroot AS production
-COPY --from=base /server /server
+COPY --from=build /server /server
 EXPOSE 3000
 ENTRYPOINT ["/server"]
