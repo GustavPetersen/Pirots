@@ -1,7 +1,8 @@
 # Secrets (keep .env.example committed)
 .env
 .env.*
-!.env.example
+!.env.dev.example
+!.env.prod.example
 
 # Dependencies and builds
 node_modules/
