@@ -2,7 +2,9 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"log"
+	"math/rand/v2"
 	"net/http"
 	"os"
 
@@ -39,6 +41,19 @@ func main() {
 	r.Get("/api/health", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		w.Write([]byte(`{"ok":true}`))
+	})
+
+	r.Get("/api/diamonds", func(w http.ResponseWriter, r *http.Request) {
+		const boardSize = 6 * 6
+		var diamonds [boardSize]int
+
+		for i := range boardSize {
+			diamonds[i] = rand.IntN(4)
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Access-Control-Allow-Origin", "http://localhost:5173")
+		json.NewEncoder(w).Encode(diamonds)
 	})
 
 	port := os.Getenv("PORT")
