@@ -40,6 +40,8 @@ services:
       context: ./frontend
       target: development
     depends_on: [pirots-api]
+    environment:
+      - VITE_API_URL=http://localhost:3000/api
     networks: [default]
     ports: 
       - "5173:5173"
