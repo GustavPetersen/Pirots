@@ -5,7 +5,7 @@ import { getDiamonds } from '../api/queries';
 
 export default async function createBoard(container: HTMLElement): Promise<Application> {
     const app = new Application();
-    await app.init( {backgroundColor: 0x1099bb, resizeTo: window});
+    await app.init( {backgroundColor: 0x000000, resizeTo: window});
     container.appendChild(app.canvas);
     
     // Load assets
