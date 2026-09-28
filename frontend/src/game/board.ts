@@ -71,7 +71,7 @@ export default async function createBoard(container: HTMLElement): Promise<Appli
     spinButton.eventMode = 'static';
     spinButton.cursor = 'pointer';
     spinButton.on('pointerdown', () => {
-        // jackpotSound.play();
+        jackpotSound.play();
         spin();
     });
     app.stage.addChild(spinButton);
