@@ -1,5 +1,5 @@
 async function apiRequest<T>(url: string): Promise<T> {
-    const baseUrl = import.meta.env.VITE_API_URL;
+    const baseUrl = import.meta.env.VITE_API_URL ?? "/api";
 
     const response = await fetch(`${baseUrl}${url}`);
     if (!response.ok) {
