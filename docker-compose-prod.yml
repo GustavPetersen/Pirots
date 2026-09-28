@@ -4,7 +4,7 @@ services:
     depends_on: [pirots-api]
     restart: unless-stopped
     environment:
-      - VITE_API_URL: ${VITE_API_URL}
+      VITE_API_URL: ${VITE_API_URL}
     networks: [default, dokploy-network]
 
   pirots-api:
