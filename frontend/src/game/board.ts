@@ -1,5 +1,5 @@
 import { QueryClient } from '@tanstack/react-query';
-import { Application, Container, Sprite, Assets, Texture } from 'pixi.js';
+import { Application, Container, Sprite, Assets, Texture} from 'pixi.js';
 import { Howl } from 'howler';
 import { getDiamonds } from '../api/queries';
 
@@ -29,7 +29,6 @@ export default async function createBoard(container: HTMLElement): Promise<Appli
     app.stage.addChild(background);
 
     // Create tiles 
-    // TODO: Needs rotated textures
     const tiles = new Container();
     const middleTiles = new Container();
     const edgeTiles = new Container();
@@ -41,6 +40,9 @@ export default async function createBoard(container: HTMLElement): Promise<Appli
         for (var j = 0; j < gridSize; j++) {
             var texture = Texture.EMPTY;
             var subContainer = edgeTiles;
+            var rotation = 0;
+            var anchorX = 0; 
+            var anchorY = 0;
 
             if (i != 0 && i != gridSize - 1 &&                  // If middle tile
                 j != 0 && j != gridSize - 1) {
@@ -50,17 +52,31 @@ export default async function createBoard(container: HTMLElement): Promise<Appli
                 texture = Texture.from('tile_corner');
             } else if (i == gridSize - 1 && j == 0) {           // If top right corner
                 texture = Texture.from('tile_corner');
-            } else if (i == 0 && j == gridSize - 1) {           // If buttom left corner
+                rotation = Math.PI / 2;
+                anchorY = 1;
+            } else if (i == 0 && j == gridSize - 1) {           // If bottom left corner
                 texture = Texture.from('tile_corner');
-            } else if (i == gridSize - 1 && j == gridSize - 1) {// If buttom right corner
+                rotation = - Math.PI / 2
+                anchorX = 1;
+            } else if (i == gridSize - 1 && j == gridSize - 1) {// If bottom right corner
                 texture = Texture.from('tile_corner');
+                rotation = Math.PI;
+                anchorX = 1;
+                anchorY = 1;
             } else if (i == 0 || i == gridSize - 1) {           // If left or right side
                 texture = Texture.from('tile_straight');
             } else if (j == 0 || j == gridSize - 1) {           // If top or buttom
                 texture = Texture.from('tile_straight');
+                rotation = Math.PI / 2;
+                anchorY = 1;
             }
 
             const tileBg = Sprite.from(texture);
+            // Rotate corners
+            if (rotation != 0) {
+                tileBg.anchor.set(anchorX, anchorY);
+                tileBg.rotation = rotation;
+            }
             tileBg.setSize(tileSize);
             tileBg.label = 'tile_bg';
 
