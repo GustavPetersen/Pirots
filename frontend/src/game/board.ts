@@ -39,7 +39,7 @@ export default async function createBoard(container: HTMLElement): Promise<Appli
 
     for (var i = 0; i < gridSize; i++) {
         for (var j = 0; j < gridSize; j++) {
-            var texture = Texture.from('placeholder');
+            var texture = Texture.EMPTY;
             var subContainer = edgeTiles;
             var rotation = 0;
             var anchorX = 0; 
@@ -91,10 +91,10 @@ export default async function createBoard(container: HTMLElement): Promise<Appli
     tiles.addChild(middleTiles);
     tiles.addChild(edgeTiles);
 
-    // Add palceholder foreground sprites for all middle tiles
+    // Add placeholder foreground sprites for all middle tiles
     for (var i = 0; i < middleTiles.children.length; i++) {
         const tile = middleTiles.getChildAt<Container>(i);
-        const tileFg = Sprite.from('placeholder');
+        const tileFg = Sprite.from('d_orange');
 
         tileFg.label = 'tile_fg';
         tileFg.setSize(tileSize * 0.8);
