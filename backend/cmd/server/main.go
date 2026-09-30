@@ -3,10 +3,12 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"log"
 	"math/rand/v2"
 	"net/http"
 	"os"
+	"strconv"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -16,6 +18,14 @@ import (
 
 	"github.com/GustavPetersen/Pirots/backend/db"
 )
+
+const boardSize = 6 * 6
+const characterCount = 4
+var characterColors [characterCount] string
+type CharacterLocation struct {
+	Color string
+	Location int
+}
 
 func main() {
 	ctx := context.Background()
@@ -44,7 +54,6 @@ func main() {
 	})
 
 	r.Get("/api/diamonds", func(w http.ResponseWriter, r *http.Request) {
-		const boardSize = 6 * 6
 		var diamonds [boardSize]int
 
 		for i := range boardSize {
@@ -54,6 +63,31 @@ func main() {
 		w.Header().Set("Content-Type", "application/json")
 		w.Header().Set("Access-Control-Allow-Origin", "http://localhost:5173")
 		json.NewEncoder(w).Encode(diamonds)
+	})
+
+	r.Get("/api/prisoners/getStartingLocation", func(w http.ResponseWriter, r *http.Request) {
+		var characterStartingPos [4] CharacterLocation
+		// players[1] = CharacterLocation{"a", 2}
+		var takenLocations [4] int
+
+		for i := 0; i < len(characterStartingPos); i++ {
+			var location = rand.IntN(boardSize)
+
+			// dette er et while loop men while er cursed i Go
+			for j := 0; j < len(takenLocations); j++ {
+				if takenLocations[j] == location {
+					location = rand.IntN(boardSize)
+					j = -1
+				} 
+			}
+
+			characterStartingPos[i] = CharacterLocation{characterColors[i], location}
+			fmt.Println("Character " + characterColors[i] + " in location " + strconv.Itoa(location))
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Access-Control-Allow-Origin", "http://localhost:5173")
+		json.NewEncoder(w).Encode(characterStartingPos)
 	})
 
 	port := os.Getenv("PORT")
