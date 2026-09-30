@@ -27,10 +27,7 @@ export async function spin(boardSize: number, sprites: Container, qc: QueryClien
         queryFn: getReels,
     });
 
-    var cnt = 0
     while (true) {
-        console.log(`iteration: ${cnt++}`)
-
         // fill board with symbols from reels
         for (var i = boardSize - 1; i >= 0; i--) {
             for (var j = boardSize - 1; j >= 0; j--) {
@@ -51,14 +48,9 @@ export async function spin(boardSize: number, sprites: Container, qc: QueryClien
             }
         }
         
-        for (var i = 0; i < boardSize * boardSize; i++) {
-            const newTexture = symbolTextures[board[i] as number];
-            const container = sprites.getChildAt<Container>(i); // assumed to exist
-            const sprite = container.getChildByLabel('tile_fg') as Sprite; // assumed to exist
-            sprite.texture = newTexture;
-        }
+        // TODO: draw here
 
-        // group all adjacent symbols of same type and count group sizes
+        // group all adjacent symbols of same type
         const groups = new UnionFind(boardSize*boardSize);
 
         for (var i = 0; i < boardSize; i++) {
@@ -82,7 +74,7 @@ export async function spin(boardSize: number, sprites: Container, qc: QueryClien
         }
 
         // Remove all groups of certain size
-        const triggerThreshold = 4;
+        const triggerThreshold = 5;
         var noTriggers = true;
 
         for (var i = 0; i < boardSize; i++) {
@@ -104,15 +96,9 @@ export async function spin(boardSize: number, sprites: Container, qc: QueryClien
             }
         }
 
-        for (var i = 0; i < boardSize * boardSize; i++) {
-            const newTexture = symbolTextures[board[i] as number];
-            const container = sprites.getChildAt<Container>(i); // assumed to exist
-            const sprite = container.getChildByLabel('tile_fg') as Sprite; // assumed to exist
-            sprite.texture = newTexture;
-        }
+        // TODO: draw here
 
         if (noTriggers) {
-            console.log("dead")
             return // spin is dead
         }
 

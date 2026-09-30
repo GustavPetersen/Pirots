@@ -23,7 +23,7 @@ export class GenericUnionFind<T> {
     }
 }
 
-// Bad too
+// Needs graph flattening 
 export class UnionFind {
     private parent: number[];
     private count: number[];
@@ -58,7 +58,7 @@ export class UnionFind {
     }
 
     public size(a: number): number {
-        return this.count[a];
+        return this.count[this.find(a)];
     }
 
 }
