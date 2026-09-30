@@ -127,13 +127,13 @@ export default async function createBoard(container: HTMLElement): Promise<Appli
     );
 
     // Setup api call on button click
-    //const jackpotSound = new Howl({src: ['Assets/Sounds/JACKPOT.mp3']});
+    const jackpotSound = new Howl({src: ['Assets/Sounds/JACKPOT.mp3']});
     const queryClient = new QueryClient();
 
     spinButton.eventMode = 'static';
     spinButton.cursor = 'pointer';
     spinButton.on('pointerdown', async () => {
-        //jackpotSound.play();
+        jackpotSound.play();
         await spin(gridSize - 2, middleTiles, queryClient);
     });
 
