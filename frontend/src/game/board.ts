@@ -1,7 +1,7 @@
 import { QueryClient } from '@tanstack/react-query';
 import { Application, Container, Sprite, Assets, Texture} from 'pixi.js';
 import { Howl } from 'howler';
-import { getReels } from '../api/queries';
+import { spin } from './evaluate';
 
 export default async function createBoard(container: HTMLElement): Promise<Application> {
     const app = new Application();
@@ -128,52 +128,16 @@ export default async function createBoard(container: HTMLElement): Promise<Appli
     // Setup api call on button click
     const jackpotSound = new Howl({src: ['Assets/Sounds/JACKPOT.mp3']});
     const queryClient = new QueryClient();
-    const dTextures: Texture[] = [
-        Texture.from('d_green'),
-        Texture.from('d_blue'),
-        Texture.from('d_red'),
-        Texture.from('d_orange'),
-    ];
-
-    const spin = async () => {
-        jackpotSound.play();
-
-        const diamonds = await queryClient.query({
-            queryKey: ["getDiamonds"],
-            queryFn: getReels,
-        });
-
-        for (var i = 0; i < middleTiles.children.length; i++) {
-            const tile = middleTiles.getChildAt<Container>(i);
-            const newTexture = dTextures[diamonds[i]];
-            const curDiamond = tile.getChildByLabel('tile_fg') as Sprite;
-
-            if (curDiamond) {
-                curDiamond.texture = newTexture;
-                continue;
-            }
-
-            // Only runs on first spin
-            const newDiamond = Sprite.from(newTexture);
-            newDiamond.label = 'tile_fg';
-            newDiamond.setSize(tileSize * 0.8);
-
-            newDiamond.anchor.set(0.5);
-            newDiamond.position.set(
-                tile.width / 2,
-                tile.height / 2,
-            );
-
-            tile.addChild(newDiamond);
-        }
-    };
 
     spinButton.eventMode = 'static';
     spinButton.cursor = 'pointer';
-    spinButton.on('pointerdown', spin);
+    spinButton.on('pointerdown', async () => {
+        jackpotSound.play();
+        await spin(gridSize - 2, middleTiles, queryClient);
+    });
 
     app.stage.addChild(spinButton);
-    spin(); // Spin the initail diamonds when loading the page
+    spin(gridSize - 2, middleTiles, queryClient); // Spin the initail diamonds when loading the page
 
     return app;
 }

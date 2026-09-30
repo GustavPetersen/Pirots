@@ -15,7 +15,7 @@ export async function spin(boardSize: number, sprites: Container, qc: QueryClien
         // fill board with symbols from reels
         for (var i = boardSize - 1; i >= 0; i--) {
             for (var j = boardSize - 1; j >= 0; j--) {
-
+                
                 const curTile = i * boardSize + j;
                 if (board[curTile] != NO_SYMBOL) { // if the current tile already has a symbol
                     continue;
