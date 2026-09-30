@@ -1,7 +1,7 @@
 import { QueryClient } from '@tanstack/react-query';
 import { Application, Container, Sprite, Assets, Texture} from 'pixi.js';
 import { Howl } from 'howler';
-import { spin } from './evaluate';
+import { spin } from './spin';
 
 export default async function createBoard(container: HTMLElement): Promise<Application> {
     const app = new Application();
