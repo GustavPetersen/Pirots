@@ -67,16 +67,16 @@ export async function spin(gridSize: number, sprites: Container, qc: QueryClient
 
                 const curTile = i * gridSize + j;
                 if (board[curTile] == NO_SYMBOL) {
-                    continue
+                    continue;
                 }
 
                 if (groups.size(curTile) < triggerThreshold) {
-                    continue
+                    continue;
                 }
 
                 // TODO: here we should save the current symbol somewhere before 
                 // removing it, so that we in the end can calcualte a score/payout
-                noTriggers = false
+                noTriggers = false;
                 board[curTile] = NO_SYMBOL;
             }
         }
@@ -91,17 +91,15 @@ export async function spin(gridSize: number, sprites: Container, qc: QueryClient
         for (var i = gridSize - 1; i >= 0; i--) {
             for (var j = gridSize - 2; j >= 0; j--) { // notice we skip the bottom row
                 var curTile = i * gridSize + j;
-                var downTile = curTile + gridSize;
-
                 const symbol = board[curTile];
                 board[curTile] = NO_SYMBOL;
 
-                while (downTile < board.length && board[downTile] == NO_SYMBOL) {
-                    curTile = downTile
-                    downTile += gridSize
+                var down = 1;
+                while (down + j < gridSize && board[curTile + down] == NO_SYMBOL) {
+                    down++;
                 }
 
-                board[curTile] = symbol;
+                board[curTile + down - 1] = symbol;
             }
         }
 
