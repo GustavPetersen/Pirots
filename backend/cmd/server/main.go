@@ -43,17 +43,21 @@ func main() {
 		w.Write([]byte(`{"ok":true}`))
 	})
 
-	r.Get("/api/diamonds", func(w http.ResponseWriter, r *http.Request) {
-		const boardSize = 6 * 6
-		var diamonds [boardSize]int
+	r.Get("/api/reels", func(w http.ResponseWriter, r *http.Request) {
+		const reelAmount = 6
+		const reelLen = 60
 
-		for i := range boardSize {
-			diamonds[i] = rand.IntN(4)
+		var reels [reelAmount][reelLen]int
+
+		for i := range reelAmount {
+			for j := range reelLen {
+				reels[i][j] = rand.IntN(4)
+			}
 		}
 
 		w.Header().Set("Content-Type", "application/json")
 		w.Header().Set("Access-Control-Allow-Origin", "http://localhost:5173")
-		json.NewEncoder(w).Encode(diamonds)
+		json.NewEncoder(w).Encode(reels)
 	})
 
 	port := os.Getenv("PORT")
