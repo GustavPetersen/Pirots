@@ -1,9 +1,15 @@
-import { Queue } from '../utils/queue'
+import { QueryClient } from '@tanstack/react-query';
 import { NO_SYMBOL, type SlotSymbol } from '../utils/types';
 import { Container, Sprite, Texture } from 'pixi.js';
+import { getReels } from '../api/queries';
+import type { Queue } from '../utils/queue';
 
-export async function spin(reels: Queue<SlotSymbol>[], boardSize: number, sprites: Container) {
+export async function spin(boardSize: number, sprites: Container, qc: QueryClient) {
     const board: SlotSymbol[] = new Array(boardSize * boardSize).fill(NO_SYMBOL)
+    const reels: Queue<SlotSymbol>[] = await qc.query({
+        queryKey: ["getReels"],
+        queryFn: getReels,
+    });
 
     while (true) {
         // fill board with symbols from reels

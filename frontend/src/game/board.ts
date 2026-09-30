@@ -1,7 +1,7 @@
 import { QueryClient } from '@tanstack/react-query';
 import { Application, Container, Sprite, Assets, Texture} from 'pixi.js';
 import { Howl } from 'howler';
-import { getDiamonds } from '../api/queries';
+import { getReels } from '../api/queries';
 
 export default async function createBoard(container: HTMLElement): Promise<Application> {
     const app = new Application();
@@ -140,7 +140,7 @@ export default async function createBoard(container: HTMLElement): Promise<Appli
 
         const diamonds = await queryClient.query({
             queryKey: ["getDiamonds"],
-            queryFn: getDiamonds,
+            queryFn: getReels,
         });
 
         for (var i = 0; i < middleTiles.children.length; i++) {
