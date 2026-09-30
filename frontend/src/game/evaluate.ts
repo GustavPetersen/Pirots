@@ -14,8 +14,8 @@ await Assets.load([
     {alias: 'transparent', src: 'transparent.png'},
 ]);
 
-export async function spin(boardSize: number, sprites: Container, qc: QueryClient) {
-    const board: SlotSymbol[] = new Array(boardSize * boardSize).fill(NO_SYMBOL)
+export async function spin(gridSize: number, sprites: Container, qc: QueryClient) {
+    const board: SlotSymbol[] = new Array(gridSize * gridSize).fill(NO_SYMBOL)
     const reels: Queue<SlotSymbol>[] = await qc.query({
         queryKey: ["getReels"],
         queryFn: getReels,
@@ -23,10 +23,10 @@ export async function spin(boardSize: number, sprites: Container, qc: QueryClien
 
     while (true) {
         // Fill board with symbols from reels
-        for (var i = boardSize - 1; i >= 0; i--) {
-            for (var j = boardSize - 1; j >= 0; j--) {
+        for (var i = gridSize - 1; i >= 0; i--) {
+            for (var j = gridSize - 1; j >= 0; j--) {
 
-                const curTile = i * boardSize + j;
+                const curTile = i * gridSize + j;
                 if (board[curTile] != NO_SYMBOL) { // if the current tile already has a symbol
                     continue;
                 }
@@ -45,23 +45,23 @@ export async function spin(boardSize: number, sprites: Container, qc: QueryClien
         await drawAndWait(sprites, board);
 
         // Group all adjacent symbols of same type
-        const groups = new UnionFind(boardSize*boardSize);
+        const groups = new UnionFind(board.length);
 
-        for (var i = 0; i < boardSize; i++) {
-            for (var j = 0; j < boardSize; j++) {
-                const curTile = i * boardSize + j;
-                const leftTile = (i-1) * boardSize + j;
-                const upTile = i * boardSize + (j-1);
-                const downTile = i * boardSize + (j+1);
-                const rightTile = (i+1) * boardSize + j;
+        for (var i = 0; i < gridSize; i++) {
+            for (var j = 0; j < gridSize; j++) {
+                const curTile = i * gridSize + j;
+                const leftTile = (i-1) * gridSize + j;
+                const upTile = i * gridSize + (j-1);
+                const downTile = i * gridSize + (j+1);
+                const rightTile = (i+1) * gridSize + j;
 
                 if (leftTile >= 0 && board[curTile] == board[leftTile]) {
                     groups.union(curTile, leftTile);
-                } else if (upTile >= 0 && board[curTile] == board[upTile]) {
+                } if (upTile >= 0 && board[curTile] == board[upTile]) {
                     groups.union(curTile, upTile);
-                } else if (downTile >= 0 && board[curTile] == board[downTile]) {
+                } if (downTile < board.length && board[curTile] == board[downTile]) {
                     groups.union(curTile, downTile);
-                } else if (downTile >= 0 && board[curTile] == board[rightTile]) {
+                } if (rightTile < board.length && board[curTile] == board[rightTile]) {
                     groups.union(curTile, rightTile);
                 }
             }
@@ -71,10 +71,10 @@ export async function spin(boardSize: number, sprites: Container, qc: QueryClien
         const triggerThreshold = 5;
         var noTriggers = true;
 
-        for (var i = 0; i < boardSize; i++) {
-            for (var j = 0; j < boardSize; j++) {
+        for (var i = 0; i < gridSize; i++) {
+            for (var j = 0; j < gridSize; j++) {
 
-                const curTile = i * boardSize + j;
+                const curTile = i * gridSize + j;
                 if (board[curTile] == NO_SYMBOL) {
                     continue
                 }
@@ -97,17 +97,17 @@ export async function spin(boardSize: number, sprites: Container, qc: QueryClien
         }
 
         // Push all symbols down to make space for new ones reeling in
-        for (var i = boardSize - 1; i >= 0; i--) {
-            for (var j = boardSize - 2; j >= 0; j--) { // notice we skip the bottom row
-                var curTile = i * boardSize + j;
-                var downTile = curTile + boardSize;
+        for (var i = gridSize - 1; i >= 0; i--) {
+            for (var j = gridSize - 2; j >= 0; j--) { // notice we skip the bottom row
+                var curTile = i * gridSize + j;
+                var downTile = curTile + gridSize;
 
                 const symbol = board[curTile];
                 board[curTile] = NO_SYMBOL;
 
-                while (downTile < boardSize * boardSize && board[downTile] == NO_SYMBOL) {
+                while (downTile < board.length && board[downTile] == NO_SYMBOL) {
                     curTile = downTile
-                    downTile += boardSize
+                    downTile += gridSize
                 }
 
                 board[curTile] = symbol;

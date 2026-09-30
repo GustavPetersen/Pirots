@@ -49,8 +49,10 @@ export class UnionFind {
     public union(a: number, b: number) {
         const aRepr = this.find(a);
         const bRepr = this.find(b);
-        this.parent[aRepr] = bRepr;
-        this.count[bRepr] += this.count[aRepr];
+        if (aRepr != bRepr) {
+            this.parent[aRepr] = bRepr;
+            this.count[bRepr] += this.count[aRepr];
+        }
     }
 
     public isUnion(a: number, b: number): boolean {
