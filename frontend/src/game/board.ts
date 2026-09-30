@@ -89,7 +89,7 @@ export default async function createBoard(container: HTMLElement): Promise<Appli
     // Add placeholder foreground sprites for all middle tiles
     for (var i = 0; i < middleTiles.children.length; i++) {
         const tile = middleTiles.getChildAt<Container>(i);
-        const tileFg = Sprite.from('d_orange');
+        const tileFg = Sprite.from('transparent');
 
         tileFg.label = 'tile_fg';
         tileFg.setSize(tileSize * 0.8);

@@ -11,14 +11,16 @@ await Assets.load([
     {alias: 'd_blue', src: 'slots_diamond_blue.png'},
     {alias: 'd_orange', src: 'slots_diamond_orange.png'},
     {alias: 'd_red', src: 'slots_diamond_red.png'},
+    {alias: 'transparent', src: 'transparent.png'},
 ]);
 
-const symbolTextures: Texture[] = [
-    Texture.from('d_green'),
-    Texture.from('d_blue'),
-    Texture.from('d_red'),
-    Texture.from('d_orange'),
-];
+const symbolTextures: Record<SlotSymbol, Texture> = {
+    [NO_SYMBOL]: Texture.from('transparent'),
+    0: Texture.from('d_green'),
+    1: Texture.from('d_blue'),
+    2: Texture.from('d_red'),
+    3: Texture.from('d_orange'),
+};
 
 export async function spin(boardSize: number, sprites: Container, qc: QueryClient) {
     const board: SlotSymbol[] = new Array(boardSize * boardSize).fill(NO_SYMBOL)
@@ -117,7 +119,7 @@ export async function spin(boardSize: number, sprites: Container, qc: QueryClien
 
         // Update tile sprites to reflect new symbols
         for (var i = 0; i < boardSize * boardSize; i++) {
-            const newTexture = symbolTextures[board[i] as number];
+            const newTexture = symbolTextures[board[i]];
             const container = sprites.getChildAt<Container>(i); // assumed to exist
             const sprite = container.getChildByLabel('tile_fg') as Sprite; // assumed to exist
             sprite.texture = newTexture;
