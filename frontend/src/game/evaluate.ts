@@ -14,14 +14,6 @@ await Assets.load([
     {alias: 'transparent', src: 'transparent.png'},
 ]);
 
-const symbolTextures: Record<SlotSymbol, Texture> = {
-    [NO_SYMBOL]: Texture.from('transparent'),
-    0: Texture.from('d_green'),
-    1: Texture.from('d_blue'),
-    2: Texture.from('d_red'),
-    3: Texture.from('d_orange'),
-};
-
 export async function spin(boardSize: number, sprites: Container, qc: QueryClient) {
     const board: SlotSymbol[] = new Array(boardSize * boardSize).fill(NO_SYMBOL)
     const reels: Queue<SlotSymbol>[] = await qc.query({
@@ -30,7 +22,7 @@ export async function spin(boardSize: number, sprites: Container, qc: QueryClien
     });
 
     while (true) {
-        // fill board with symbols from reels
+        // Fill board with symbols from reels
         for (var i = boardSize - 1; i >= 0; i--) {
             for (var j = boardSize - 1; j >= 0; j--) {
 
@@ -50,9 +42,9 @@ export async function spin(boardSize: number, sprites: Container, qc: QueryClien
             }
         }
         
-        // TODO: draw here
+        await drawAndWait(sprites, board);
 
-        // group all adjacent symbols of same type
+        // Group all adjacent symbols of same type
         const groups = new UnionFind(boardSize*boardSize);
 
         for (var i = 0; i < boardSize; i++) {
@@ -98,7 +90,7 @@ export async function spin(boardSize: number, sprites: Container, qc: QueryClien
             }
         }
 
-        // TODO: draw here
+        await drawAndWait(sprites, board);
 
         if (noTriggers) {
             return // spin is dead
@@ -107,25 +99,40 @@ export async function spin(boardSize: number, sprites: Container, qc: QueryClien
         // Push all symbols down to make space for new ones reeling in
         for (var i = boardSize - 1; i >= 0; i--) {
             for (var j = boardSize - 2; j >= 0; j--) { // notice we skip the bottom row
-                const curTile = i * boardSize + j;
-                const downTile = i * boardSize + (j+1);
+                var curTile = i * boardSize + j;
+                var downTile = curTile + boardSize;
 
-                if (board[downTile] == NO_SYMBOL) {
-                    board[downTile] = board[curTile];
-                    board[curTile] = NO_SYMBOL;
+                const symbol = board[curTile];
+                board[curTile] = NO_SYMBOL;
+
+                while (downTile < boardSize * boardSize && board[downTile] == NO_SYMBOL) {
+                    curTile = downTile
+                    downTile += boardSize
                 }
+
+                board[curTile] = symbol;
             }
         }
 
-        // Update tile sprites to reflect new symbols
-        for (var i = 0; i < boardSize * boardSize; i++) {
-            const newTexture = symbolTextures[board[i]];
-            const container = sprites.getChildAt<Container>(i); // assumed to exist
-            const sprite = container.getChildByLabel('tile_fg') as Sprite; // assumed to exist
-            sprite.texture = newTexture;
-        }
-
-        // Sleep a bit before next iteration
-        await new Promise((resolve) => setTimeout(resolve, 2000));
+        await drawAndWait(sprites, board);
     }
+}
+
+async function drawAndWait(sprites: Container, board: SlotSymbol[]) {
+    const symbolTextures: Record<SlotSymbol, Texture> = {
+        [NO_SYMBOL]: Texture.from('transparent'),
+        0: Texture.from('d_green'),
+        1: Texture.from('d_blue'),
+        2: Texture.from('d_red'),
+        3: Texture.from('d_orange'),
+    };
+
+    for (var i = 0; i < board.length; i++) {
+        const newTexture = symbolTextures[board[i]];
+        const container = sprites.getChildAt<Container>(i); // assumed to exist
+        const sprite = container.getChildByLabel('tile_fg') as Sprite; // assumed to exist
+        sprite.texture = newTexture;
+    }
+
+    await new Promise((resolve) => setTimeout(resolve, 2000));
 }
