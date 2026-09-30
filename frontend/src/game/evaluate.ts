@@ -1,18 +1,9 @@
 import { QueryClient } from '@tanstack/react-query';
 import { NO_SYMBOL, type SlotSymbol } from '../utils/types';
-import { Container, Sprite, Texture, Assets } from 'pixi.js';
+import { Container, Sprite, Texture, } from 'pixi.js';
 import { getReels } from '../api/queries';
 import type { Queue } from '../utils/queue';
 import { UnionFind } from '../utils/unionfind';
-
-await Assets.init({basePath: 'Assets/Sprites/'})
-await Assets.load([
-    {alias: 'd_green', src: 'slots_diamond_green.png'},
-    {alias: 'd_blue', src: 'slots_diamond_blue.png'},
-    {alias: 'd_orange', src: 'slots_diamond_orange.png'},
-    {alias: 'd_red', src: 'slots_diamond_red.png'},
-    {alias: 'transparent', src: 'transparent.png'},
-]);
 
 export async function spin(gridSize: number, sprites: Container, qc: QueryClient) {
     const board: SlotSymbol[] = new Array(gridSize * gridSize).fill(NO_SYMBOL)
@@ -42,7 +33,7 @@ export async function spin(gridSize: number, sprites: Container, qc: QueryClient
             }
         }
         
-        await drawAndWait(sprites, board);
+        await drawAndWait(sprites, board, 2000);
 
         // Group all adjacent symbols of same type
         const groups = new UnionFind(board.length);
@@ -90,7 +81,7 @@ export async function spin(gridSize: number, sprites: Container, qc: QueryClient
             }
         }
 
-        await drawAndWait(sprites, board);
+        await drawAndWait(sprites, board, 2000);
 
         if (noTriggers) {
             return // spin is dead
@@ -114,11 +105,11 @@ export async function spin(gridSize: number, sprites: Container, qc: QueryClient
             }
         }
 
-        await drawAndWait(sprites, board);
+        await drawAndWait(sprites, board, 2000);
     }
 }
 
-async function drawAndWait(sprites: Container, board: SlotSymbol[]) {
+async function drawAndWait(sprites: Container, board: SlotSymbol[], ms: number) {
     const symbolTextures: Record<SlotSymbol, Texture> = {
         [NO_SYMBOL]: Texture.from('transparent'),
         0: Texture.from('d_green'),
@@ -134,5 +125,5 @@ async function drawAndWait(sprites: Container, board: SlotSymbol[]) {
         sprite.texture = newTexture;
     }
 
-    await new Promise((resolve) => setTimeout(resolve, 2000));
+    await new Promise((resolve) => setTimeout(resolve, ms));
 }

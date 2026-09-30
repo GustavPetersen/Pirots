@@ -22,6 +22,7 @@ export default async function createBoard(container: HTMLElement): Promise<Appli
         {alias: 'd_orange', src: 'slots_diamond_orange.png'},
         {alias: 'd_red', src: 'slots_diamond_red.png'},
         {alias: 'transparent', src: 'transparent.png'},
+        {alias: 'pirots', src: 'pirots_logo_650.png'},
     ]);
 
     // Create background
