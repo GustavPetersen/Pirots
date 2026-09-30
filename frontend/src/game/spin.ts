@@ -46,13 +46,13 @@ export async function spin(gridSize: number, sprites: Container, qc: QueryClient
                 const downTile = i * gridSize + (j+1);
                 const rightTile = (i+1) * gridSize + j;
 
-                if (leftTile >= 0 && board[curTile] == board[leftTile]) {
+                if (i != 0 && board[curTile] == board[leftTile]) {
                     groups.union(curTile, leftTile);
-                } if (upTile >= 0 && board[curTile] == board[upTile]) {
+                } if (j != 0 && board[curTile] == board[upTile]) {
                     groups.union(curTile, upTile);
-                } if (downTile < board.length && board[curTile] == board[downTile]) {
+                } if (j != gridSize - 1 && board[curTile] == board[downTile]) {
                     groups.union(curTile, downTile);
-                } if (rightTile < board.length && board[curTile] == board[rightTile]) {
+                } if (i != gridSize - 1 && board[curTile] == board[rightTile]) {
                     groups.union(curTile, rightTile);
                 }
             }
