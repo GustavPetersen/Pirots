@@ -1,9 +1,8 @@
 import { Queue } from '../utils/queue'
+import { NO_SYMBOL, type SlotSymbol } from '../utils/types';
+import { Container, Sprite, Texture } from 'pixi.js';
 
-const NO_SYMBOL = Symbol();
-type SlotSymbol = number | typeof NO_SYMBOL;
-
-export function evaluate_spin(reels: Queue<SlotSymbol>[], boardSize: number) {
+export function spin(reels: Queue<SlotSymbol>[], boardSize: number, sprites: Container) {
     const board: SlotSymbol[] = new Array(boardSize * boardSize).fill(NO_SYMBOL)
 
     while (true) {
@@ -70,7 +69,7 @@ export function evaluate_spin(reels: Queue<SlotSymbol>[], boardSize: number) {
             }
         }
 
-        // Push all symbols down to make space for new reeling in
+        // Push all symbols down to make space for new ones reeling in
         for (var i = boardSize - 1; i >= 0; i--) {
             for (var j = boardSize - 2; j >= 0; j--) { // notice we skip the bottom row
                 const curTile = i * boardSize + j;
@@ -81,6 +80,21 @@ export function evaluate_spin(reels: Queue<SlotSymbol>[], boardSize: number) {
                     board[curTile] = NO_SYMBOL;
                 }
             }
+        }
+
+        // Update tile sprites to reflect new symbols
+        const symbolTextures: Texture[] = [
+            Texture.from('d_green'),
+            Texture.from('d_blue'),
+            Texture.from('d_red'),
+            Texture.from('d_orange'),
+        ];
+
+        for (var i = 0; i < boardSize * boardSize; i++) {
+            const newTexture = symbolTextures[board[i] as number];
+            const container = sprites.getChildAt<Container>(i); // assumed to exist
+            const sprite = container.getChildByLabel('tile_fg') as Sprite; // assumed to exist
+            sprite.texture = newTexture;
         }
     }
 }

@@ -21,6 +21,7 @@ export default async function createBoard(container: HTMLElement): Promise<Appli
         {alias: 'd_blue', src: 'slots_diamond_blue.png'},
         {alias: 'd_orange', src: 'slots_diamond_orange.png'},
         {alias: 'd_red', src: 'slots_diamond_red.png'},
+        {alias: 'placeholder', src: 'placeholder.png'},
     ]);
 
     // Create background
@@ -38,7 +39,7 @@ export default async function createBoard(container: HTMLElement): Promise<Appli
 
     for (var i = 0; i < gridSize; i++) {
         for (var j = 0; j < gridSize; j++) {
-            var texture = Texture.EMPTY;
+            var texture = Texture.from('placeholder');
             var subContainer = edgeTiles;
             var rotation = 0;
             var anchorX = 0; 
@@ -89,6 +90,22 @@ export default async function createBoard(container: HTMLElement): Promise<Appli
 
     tiles.addChild(middleTiles);
     tiles.addChild(edgeTiles);
+
+    // Add palceholder foreground sprites for all middle tiles
+    for (var i = 0; i < middleTiles.children.length; i++) {
+        const tile = middleTiles.getChildAt<Container>(i);
+        const tileFg = Sprite.from('placeholder');
+
+        tileFg.label = 'tile_fg';
+        tileFg.setSize(tileSize * 0.8);
+        tileFg.anchor.set(0.5);
+        tileFg.position.set(
+            tile.width / 2,
+            tile.height / 2,
+        );
+
+        tile.addChild(tileFg);
+    }
 
     // Center tiles
     tiles.position.set(
