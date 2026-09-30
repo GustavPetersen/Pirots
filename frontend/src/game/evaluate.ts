@@ -64,7 +64,7 @@ export function evaluate_spin(reels: Queue<SlotSymbol>[], boardSize: number) {
                     continue
                 }
 
-                // TODO: here we should save the current symbol before 
+                // TODO: here we should save the current symbol somewhere before 
                 // removing it, so that we in the end can calcualte a score/payout
                 board[curTile] = NO_SYMBOL;
             }
@@ -75,7 +75,11 @@ export function evaluate_spin(reels: Queue<SlotSymbol>[], boardSize: number) {
             for (var j = boardSize - 2; j >= 0; j--) { // notice we skip the bottom row
                 const curTile = i * boardSize + j;
                 const downTile = i * boardSize + (j+1);
-                
+
+                if (board[downTile] == NO_SYMBOL) {
+                    board[downTile] = board[curTile];
+                    board[curTile] = NO_SYMBOL;
+                }
             }
         }
     }
