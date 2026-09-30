@@ -18,7 +18,7 @@ export async function getReels(): Promise<Queue<SlotSymbol>[]> {
     const reels: Queue<SlotSymbol>[] = [];
 
     arrays.forEach(arr => {
-        const reel = new Queue<SlotSymbol>;
+        const reel = new Queue<SlotSymbol>();
         arr.forEach(n => reel.pushBack(n as SlotSymbol));
         reels.push(reel);
     })

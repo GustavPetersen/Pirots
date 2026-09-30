@@ -17,11 +17,6 @@ export default async function createBoard(container: HTMLElement): Promise<Appli
         {alias: 'tile_corner', src: 'slots_tile_corner.png'},
         {alias: 'tile_straight', src: 'slots_tile_straight.png'},
         {alias: 'spin_button', src: 'slots_spin_button.png'},
-        {alias: 'd_green', src: 'slots_diamond_green.png'},
-        {alias: 'd_blue', src: 'slots_diamond_blue.png'},
-        {alias: 'd_orange', src: 'slots_diamond_orange.png'},
-        {alias: 'd_red', src: 'slots_diamond_red.png'},
-        {alias: 'placeholder', src: 'placeholder.png'},
     ]);
 
     // Create background
@@ -126,18 +121,18 @@ export default async function createBoard(container: HTMLElement): Promise<Appli
     );
 
     // Setup api call on button click
-    const jackpotSound = new Howl({src: ['Assets/Sounds/JACKPOT.mp3']});
+    //const jackpotSound = new Howl({src: ['Assets/Sounds/JACKPOT.mp3']});
     const queryClient = new QueryClient();
 
     spinButton.eventMode = 'static';
     spinButton.cursor = 'pointer';
     spinButton.on('pointerdown', async () => {
-        jackpotSound.play();
+        //jackpotSound.play();
         await spin(gridSize - 2, middleTiles, queryClient);
     });
 
     app.stage.addChild(spinButton);
-    spin(gridSize - 2, middleTiles, queryClient); // Spin the initail diamonds when loading the page
+    //spin(gridSize - 2, middleTiles, queryClient); // Spin the initail diamonds when loading the page
 
     return app;
 }
