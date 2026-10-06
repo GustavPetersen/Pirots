@@ -8,8 +8,8 @@
 node_modules/
 dist/
 build/
-bin/
-obj/
+bin
+obj
 
 # Logs
 *.log

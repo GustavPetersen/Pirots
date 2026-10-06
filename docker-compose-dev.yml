@@ -15,7 +15,7 @@ services:
       timeout: 3s
       retries: 5
 
-  pirots-api:
+  api:
     build: 
       context: ./backend
       target: development
@@ -23,7 +23,6 @@ services:
       pirots-db:
         condition: service_healthy
     environment:
-      PORT: 3000
       DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@pirots-db:5432/${POSTGRES_DB_NAME}
     restart: unless-stopped
     ports:
@@ -39,7 +38,7 @@ services:
     build: 
       context: ./frontend
       target: development
-    depends_on: [pirots-api]
+    depends_on: [api]
     environment:
       - VITE_API_URL=http://localhost:3000/api
     networks: [default]
