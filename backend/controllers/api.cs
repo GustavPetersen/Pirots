@@ -16,22 +16,11 @@ public class BackendController : ControllerBase
     }
 
     /// <summary>
-    /// bruh
-    /// </summary>
-    /// <returns>test</returns>
-    [HttpGet]
-    [Route("test")]
-    public async Task<IActionResult> Test()
-    {
-        return Ok("yes");
-    }
-
-    /// <summary>
     /// Returns reels containg random slot symbols
     /// </summary>
     /// <param name="nReels">The number of reels to return</param>
     /// <param name="symbolsPerReel">The number of symbols per reel</param>
-    /// <returns>A list reels encoded as lists of integers</returns>
+    /// <returns>A list reels each encoded as lists of integers</returns>
     [HttpGet]
     [Route("reels")]
     public async Task<IActionResult> GetReels(int nReels, int symbolsPerReel)

@@ -9,7 +9,7 @@ export async function spin(gridSize: number, sprites: Container, qc: QueryClient
     const board: SlotSymbol[] = new Array(gridSize * gridSize).fill(NO_SYMBOL)
     const reels: Queue<SlotSymbol>[] = await qc.query({
         queryKey: ["getReels"],
-        queryFn: getReels,
+        queryFn: getReels(6, 60),
     });
 
     while (true) {

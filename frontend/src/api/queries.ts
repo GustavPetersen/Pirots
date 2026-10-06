@@ -13,15 +13,23 @@ async function apiRequest<T>(url: string): Promise<T> {
     return data as Promise<T>;
 }
 
-export async function getReels(): Promise<Queue<SlotSymbol>[]> {
-    const arrays = await apiRequest<number[][]>("/reels");
-    const reels: Queue<SlotSymbol>[] = [];
+export function getReels(nReels: number, symbolsPerReel: number): () => Promise<Queue<SlotSymbol>[]> {
+    return async () => {
+        const params = {
+            nReels: String(nReels),
+            symbolsPerReel: String(symbolsPerReel),
+        };
+        const queryString = new URLSearchParams(params).toString();
 
-    arrays.forEach(arr => {
-        const reel = new Queue<SlotSymbol>();
-        arr.forEach(n => reel.pushBack(n as SlotSymbol));
-        reels.push(reel);
-    })
+        const arrays = await apiRequest<number[][]>(`/reels?${queryString}`);
+        const reels: Queue<SlotSymbol>[] = [];
 
-    return reels;
+        arrays.forEach(arr => {
+            const reel = new Queue<SlotSymbol>();
+            arr.forEach(n => reel.pushBack(n as SlotSymbol));
+            reels.push(reel);
+        })
+
+        return reels;
+    }
 }
