@@ -17,5 +17,5 @@ FROM mcr.microsoft.com/dotnet/aspnet:10.0-alpine AS production
 WORKDIR /app
 COPY --from=build /app/publish .
 
-ENTRYPOINT ["dotnet", "backend.dll"]
+ENTRYPOINT ["dotnet", "backend.dll", "--urls", "http://0.0.0.0:3000"]
 

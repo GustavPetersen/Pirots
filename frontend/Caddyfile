@@ -2,7 +2,7 @@
 	encode gzip zstd
 
 	handle /api/* {
-		reverse_proxy pirots-api:3000
+		reverse_proxy api:3000
 	}
 
 	handle {
