@@ -21,7 +21,7 @@ services:
     depends_on: 
       db:
         condition: service_healthy
-    environment:
+    environment: # outdated
       DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@pirots-db:5432/${POSTGRES_DB_NAME}
     restart: unless-stopped
     ports:

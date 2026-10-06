@@ -4,7 +4,7 @@ using Microsoft.OpenApi;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
-builder.Services.AddCors(options =>
+builder.Services.AddCors(options => // TODO: Actually consider proper COORS policy
 {
     options.AddPolicy("AllowAll", policy =>
     {

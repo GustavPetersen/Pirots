@@ -1,12 +1,21 @@
-FROM mcr.microsoft.com/dotnet/sdk:10.0 AS development
+FROM mcr.microsoft.com/dotnet/sdk:10.0 AS base
 WORKDIR /src
 
-# Cache restore
 COPY *.csproj ./
 RUN dotnet restore
 
-# Copy source
+FROM base AS development
 COPY . .
 
-# Start dotnet server
-CMD ["dotnet", "run", "--no-launch-profile", "--urls", "http://0.0.0.0:3000"]
+ENTRYPOINT ["dotnet", "run", "--no-launch-profile", "--urls", "http://0.0.0.0:3000"]
+
+FROM base AS build
+COPY . .
+RUN dotnet publish -c Release -o /app/publish
+
+FROM mcr.microsoft.com/dotnet/aspnet:10.0-alpine AS production
+WORKDIR /app
+COPY --from=build /app/publish .
+
+ENTRYPOINT ["dotnet", "backend.dll"]
+
