@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Net.Http.Headers;
 
 /// <summary>
 /// Controller for backend API
@@ -40,5 +41,32 @@ public class BackendController : ControllerBase
         }
 
         return Ok(reels);
+    }
+
+    /// <summary>
+    /// Gets starting locations for each prisoner. Site indexed, i.e. location of 
+    /// prisoner 0 is at index 0, prisoner 1 at index 1, etc. Assumes square board.
+    /// </summary>
+    /// <param name="boardSize">The deimensions/side lengths of the board</param>
+    /// <returns>A site indexed array of prisoner locations</returns>
+    [HttpGet]
+    [Route("prisoners")]
+    public async Task<IActionResult> GetPrisonerLocations(int boardSize)
+    {
+        const int nPrisoners = 4;
+        HashSet<int> locations = new(nPrisoners);
+
+        for (int i = 0; i < nPrisoners; i++)
+        {
+            int loc;
+            do
+            {
+                loc = Random.Shared.Next(boardSize*boardSize);
+            }
+            while (locations.Contains(loc));
+            locations.Add(loc);
+        }
+
+        return Ok(locations);
     }
 }
