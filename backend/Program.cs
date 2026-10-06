@@ -33,15 +33,18 @@ builder.Services.AddSwaggerGen(options =>
 
 var app = builder.Build();
 
-app.UseSwagger(options =>
+if (app.Environment.IsDevelopment())
 {
-    options.OpenApiVersion = OpenApiSpecVersion.OpenApi3_0;
-});
-app.UseSwaggerUI(options =>
-{
-    options.SwaggerEndpoint("/swagger/v1/swagger.json", "GoofyAhh API v1");
-    options.RoutePrefix = "api";
-});
+    app.UseSwagger(options =>
+    {
+        options.OpenApiVersion = OpenApiSpecVersion.OpenApi3_0;
+    });
+    app.UseSwaggerUI(options =>
+    {
+        options.SwaggerEndpoint("/swagger/v1/swagger.json", "GoofyAhh API v1");
+        options.RoutePrefix = "api";
+    });
+}
 
 app.UseCors("AllowAll");
 

@@ -7,6 +7,8 @@ RUN dotnet restore
 FROM base AS development
 COPY . .
 
+ENV ASPNETCORE_ENVIRONMENT=Development
+
 ENTRYPOINT ["dotnet", "run", "--no-launch-profile", "--urls", "http://0.0.0.0:3000"]
 
 FROM base AS build
