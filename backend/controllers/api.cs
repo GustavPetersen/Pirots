@@ -1,7 +1,4 @@
-
 using Microsoft.AspNetCore.Mvc;
-
-namespace LexentryAPI.App.Controllers;
 
 /// <summary>
 /// Controller for backend API
@@ -12,7 +9,7 @@ namespace LexentryAPI.App.Controllers;
 public class BackendController : ControllerBase
 {
     /// <summary>
-    ///  Constructor deluxe
+    /// Constructor deluxe
     /// </summary>
     public BackendController()
     {

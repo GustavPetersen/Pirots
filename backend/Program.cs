@@ -1,5 +1,5 @@
 using System.Reflection;
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,10 +23,13 @@ builder.Services.AddSwaggerGen(options =>
 
 var app = builder.Build();
 
-app.UseSwagger();
+app.UseSwagger(options =>
+{
+    options.OpenApiVersion = OpenApiSpecVersion.OpenApi3_0;
+});
 app.UseSwaggerUI(options =>
 {
-    options.SwaggerEndpoint("../swagger/v1/swagger.json", "GoofyAhh API v1");
+    options.SwaggerEndpoint("/swagger/v1/swagger.json", "GoofyAhh API v1");
     options.RoutePrefix = "api";
 });
 
