@@ -1,20 +1,21 @@
-FROM golang:1-alpine AS base
+FROM mcr.microsoft.com/dotnet/sdk:10.0 AS base
 WORKDIR /src
-COPY go.mod go.sum ./
-RUN go mod download
 
-# Development build and serve
+COPY *.csproj ./
+RUN dotnet restore
+
 FROM base AS development
 COPY . .
-ENTRYPOINT [ "go", "run", "./cmd/server/main.go"]
 
-# Production build
+ENTRYPOINT ["dotnet", "run", "--no-launch-profile", "--urls", "http://0.0.0.0:3000"]
+
 FROM base AS build
 COPY . .
-RUN CGO_ENABLED=0 go build -ldflags="-s -w" -o /server ./cmd/server
+RUN dotnet publish -c Release -o /app/publish
 
-# Production serve
-FROM gcr.io/distroless/static-debian12:nonroot AS production
-COPY --from=build /server /server
-EXPOSE 3000
-ENTRYPOINT ["/server"]
+FROM mcr.microsoft.com/dotnet/aspnet:10.0-alpine AS production
+WORKDIR /app
+COPY --from=build /app/publish .
+
+ENTRYPOINT ["dotnet", "backend.dll"]
+

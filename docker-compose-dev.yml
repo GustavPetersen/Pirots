@@ -1,6 +1,6 @@
 
 services:
-  pirots-db:
+  db:
     image: postgres:17-alpine
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
@@ -8,27 +8,24 @@ services:
       POSTGRES_DB: ${POSTGRES_DB_NAME} 
     volumes:
       - pirots_data:/var/lib/postgresql/data
-    networks: [default]
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB_NAME}"]
       interval: 5s
       timeout: 3s
       retries: 5
 
-  pirots-api:
+  api:
     build: 
       context: ./backend
       target: development
     depends_on: 
-      pirots-db:
+      db:
         condition: service_healthy
-    environment:
-      PORT: 3000
+    environment: # outdated
       DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@pirots-db:5432/${POSTGRES_DB_NAME}
     restart: unless-stopped
     ports:
       - "3000:3000"
-    networks: [default]
     develop:
       watch:
         - action: sync+restart
@@ -39,10 +36,9 @@ services:
     build: 
       context: ./frontend
       target: development
-    depends_on: [pirots-api]
+    depends_on: [api]
     environment:
       - VITE_API_URL=http://localhost:3000/api
-    networks: [default]
     ports: 
       - "5173:5173"
     develop:
