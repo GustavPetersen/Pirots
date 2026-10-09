@@ -47,7 +47,7 @@ public class BackendController : ControllerBase
     /// Gets starting locations for each prisoner. Site indexed, i.e. location of 
     /// prisoner 0 is at index 0, prisoner 1 at index 1, etc. Assumes square board.
     /// </summary>
-    /// <param name="boardSize">The deimensions/side lengths of the board</param>
+    /// <param name="boardSize">The number of tiles on the board</param>
     /// <returns>A site indexed array of prisoner locations</returns>
     [HttpGet]
     [Route("prisoners")]
@@ -61,7 +61,7 @@ public class BackendController : ControllerBase
             int loc;
             do
             {
-                loc = Random.Shared.Next(boardSize*boardSize);
+                loc = Random.Shared.Next(boardSize);
             }
             while (locations.Contains(loc));
             locations.Add(loc);
