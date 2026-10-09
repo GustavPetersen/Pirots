@@ -33,3 +33,14 @@ export function getReels(nReels: number, symbolsPerReel: number): () => Promise<
         return reels;
     }
 }
+
+export function getPrisonersLocations(boardSize: number): () => Promise<number[]> {
+    return async () => {
+        const params = {
+            boardSize: String(boardSize)
+        };
+        const queryString = new URLSearchParams(params).toString();
+
+        return await apiRequest<number[]>(`/prisoners?${queryString}`);
+    };
+}

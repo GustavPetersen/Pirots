@@ -1,7 +1,7 @@
 import { QueryClient } from '@tanstack/react-query';
 import { NO_SYMBOL, type SlotSymbol } from '../utils/types';
 import { Container, Sprite, Texture, } from 'pixi.js';
-import { getReels } from '../api/queries';
+import { getPrisonersLocations, getReels } from '../api/queries';
 import type { Queue } from '../utils/queue';
 import { UnionFind } from '../utils/unionfind';
 
@@ -10,6 +10,10 @@ export async function spin(gridSize: number, sprites: Container, qc: QueryClient
     const reels: Queue<SlotSymbol>[] = await qc.query({
         queryKey: ["getReels"],
         queryFn: getReels(6, 60),
+    });
+    const prisonerLocs: Queue<SlotSymbol>[] = await qc.query({
+        queryKey: ["getPrisonerLocations"],
+        queryFn: getPrisonersLocations(board.length),
     });
 
     while (true) {
