@@ -11,47 +11,38 @@ export class PriorityQueue<T extends Comparable<T>> {
 
     public insert(element: T): void {
         var curIdx = this.heap.push(element) - 1;
-        var parentIdx = this.parentIdx(curIdx);
-        var shouldFloat = element.compareTo(this.heap[parentIdx]) === this.order;
 
-        while (shouldFloat) {
-            this.heap[curIdx] = this.heap[parentIdx]
+        while (true) {
+            const parentIdx = this.parentIdx(curIdx);
+            const shouldFloat = element.compareTo(this.heap[parentIdx]) === this.order;
+            if (!shouldFloat) return;
+
+            this.heap[curIdx] = this.heap[parentIdx];
             this.heap[parentIdx] = element;
-
             curIdx = parentIdx;
-            parentIdx = this.parentIdx(curIdx);
-            shouldFloat = element.compareTo(this.heap[parentIdx]) === this.order;
         }
     }
 
     public pop(): T | undefined {
-        if (this.heap.length <= 1) {
-            return this.heap.pop();
-        }
+        if (this.heap.length <= 1) return this.heap.pop();
 
         const ret = this.heap[0];
         const element = this.heap.pop()!;
-
         var curIdx = 0;
-        var leftIdx = this.leftIdx(curIdx);
-        var rightIdx = this.rightIdx(curIdx);
-        var childIdx = this.heap[leftIdx].compareTo(this.heap[rightIdx]) === this.order
-                       ? leftIdx : rightIdx;
-        var shouldSink = this.heap[childIdx].compareTo(element) === this.order;
 
-        while (shouldSink) {
+        while (true) {
+            const leftIdx = this.leftIdx(curIdx);
+            const rightIdx = this.rightIdx(curIdx);
+            const childIdx = this.heap[leftIdx].compareTo(this.heap[rightIdx]) === this.order
+                             ? leftIdx : rightIdx;
+
+            const shouldSink = this.heap[childIdx].compareTo(element) === this.order;
+            if (!shouldSink) return ret;
+
             this.heap[curIdx] = this.heap[childIdx];
             this.heap[childIdx] = element;
-            
             curIdx = childIdx;
-            leftIdx = this.leftIdx(curIdx);
-            rightIdx = this.rightIdx(curIdx);
-            childIdx = this.heap[leftIdx].compareTo(this.heap[rightIdx]) === this.order 
-                       ? leftIdx : rightIdx;
-            shouldSink = this.heap[childIdx].compareTo(element) === this.order;
         }
-
-        return ret;
     }
 
     public peek(): T | undefined {

@@ -23,7 +23,7 @@ export class GenericUnionFind<T> {
     }
 }
 
-// Needs graph flattening 
+// TODO: Needs graph flattening 
 export class UnionFind {
     private parent: number[];
     private count: number[];
