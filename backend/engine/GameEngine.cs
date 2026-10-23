@@ -55,7 +55,7 @@ public class GameEngine
             bool matches = grid[x][y] switch
             {
                 Diamond d => d.color == color,
-                Empty => true,
+                Empty => false,
                 _ => false
             };
 
