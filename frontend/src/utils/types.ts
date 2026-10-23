@@ -1,30 +1,18 @@
-export type SpinResult = {
-    initialGrid: Array<Array<{name: string}>>,
-    prisonerMovements: {
-                            Blue: 
-                            {
-                                startingPosition: Position
-                                movements: Array<Position>
-                            },
-                            Green: 
-                            {
-                                startingPosition: Position
-                                movements: Array<Position>
-                            },
-                            Orange: 
-                            {
-                                startingPosition: Position
-                                movements: Array<Position>
-                            },
-                            Red: 
-                            {
-                                startingPosition: Position
-                                movements: Array<Position>
-                            }
-                        }
-};
+import type { PRISONER_COLORS } from "./constants";
 
 export type Position = {
-    x: number,
-    y: number,
+  x: number;
+  y: number;
+};
+
+export type PrisonerColor = (typeof PRISONER_COLORS)[number];
+
+export type PrisonerMovement = {
+  startingPosition: Position;
+  movements: Array<Position>;
+};
+
+export type SpinResult = {
+  initialGrid: Array<Array<{ name: string }>>;
+  prisonerMovements: Record<PrisonerColor, PrisonerMovement>;
 };
