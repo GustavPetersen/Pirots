@@ -100,7 +100,7 @@ public class GameEngine
         return 5;
     }
 
-    public void Spin()
+    public void Spin(int bet)
     {
         List<Prisoner> prisoners = PlacePrisoners();
         List<List<Symbol>> grid = PlaceGrid(prisoners);
