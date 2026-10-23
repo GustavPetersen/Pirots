@@ -33,3 +33,17 @@ export function getReels(nReels: number, symbolsPerReel: number): () => Promise<
         return reels;
     }
 }
+
+export function getSpin(bet: number, idempotencyKey: number): () => Promise<any> {
+    return async () => {
+        const params = {
+            bet: String(bet),
+            idempotencyKey: String(idempotencyKey),
+        };
+
+        const queryString = new URLSearchParams(params).toString();
+        const result = await apiRequest(`/spin?${queryString}`);
+
+        return result;
+    }
+}

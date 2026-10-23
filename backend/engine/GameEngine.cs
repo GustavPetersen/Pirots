@@ -2,20 +2,20 @@ using Microsoft.EntityFrameworkCore.Diagnostics;
 
 public class GameEngine
 {
-    private List<Prisoner> PlacePrisoners()
+    private static List<Prisoner> PlacePrisoners()
     {
         List<Prisoner> prisoners =
         [
             new Prisoner(new Position(0, 0), Color.Blue),
             new Prisoner(new Position(5, 2), Color.Red),
             new Prisoner(new Position(2, 4), Color.Green),
-            new Prisoner(new Position(5, 6), Color.Orange),
+            new Prisoner(new Position(5, 3), Color.Orange),
         ];
 
         return prisoners;
     }
 
-    private List<List<Symbol>> PlaceGrid(List<Prisoner> prisoners)
+    private static List<List<Symbol>> PlaceGrid(List<Prisoner> prisoners)
     {
         Random random = new Random();
         Color[] colors = Enum.GetValues<Color>();
@@ -42,7 +42,7 @@ public class GameEngine
         return grid;
     }
 
-    private List<Position> GetAdjacentPositions(List<List<Symbol>> grid, Position p, Color color)
+    private static List<Position> GetAdjacentPositions(List<List<Symbol>> grid, Position p, Color color)
     {
         var adjacentSymbolPositions = new List<Position>();
 
@@ -70,7 +70,7 @@ public class GameEngine
         return adjacentSymbolPositions;
     }
 
-    private List<Position> CollectConnected(List<List<Symbol>> grid, Prisoner prisoner)
+    private static List<Position> CollectConnected(List<List<Symbol>> grid, Prisoner prisoner)
     {
         Position rootPosition = prisoner.Position;
 
@@ -95,27 +95,36 @@ public class GameEngine
         return seenPositions;
     }
 
-    private int CalculatePayout(List<Position> movedPositions, List<List<Symbol>> grid)
+    private static int CalculatePayout(List<Position> movedPositions, List<List<Symbol>> grid)
     {
         return 5;
     }
 
-    public void Spin(int bet)
+    public static SpinResult Spin(int bet)
     {
         List<Prisoner> prisoners = PlacePrisoners();
         List<List<Symbol>> grid = PlaceGrid(prisoners);
+        List<List<Symbol>> initialGrid = grid;
+
         int totalWin = 0;
+
+        Dictionary<Color, Tuple<Position, List<Position>>> prisonerMovements = new();
 
         foreach (Prisoner prisoner in prisoners)
         {
+            // TODO: Add movements to final return for prisoner with color
             List<Position> movedPositions = CollectConnected(grid, prisoner);
+            prisonerMovements.Add(prisoner.Color, new Tuple<Position, List<Position>>(prisoner.Position, movedPositions));
             totalWin += CalculatePayout(movedPositions, grid);
             foreach (Position position in movedPositions)
             {
+                Console.WriteLine(position.ToString());
                 grid[position.X][position.Y] = new Empty();
             }
         }
-    
-
-    }
+        Console.WriteLine(initialGrid);
+        Console.WriteLine(initialGrid[0]);
+        Console.WriteLine(initialGrid[0][0]);
+        return new SpinResult(initialGrid, prisonerMovements);
+    }  
 }

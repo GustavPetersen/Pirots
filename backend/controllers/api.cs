@@ -74,12 +74,16 @@ public class BackendController : ControllerBase
     [Route("spin")]
     public async Task<IActionResult> SpinReel(int bet, int idempotencyKey)
     {
+        SpinResult result = GameEngine.Spin(bet);
         // TODO: DO NOT RUN SPIN WITH SAME KEY
         // TODO: Load Player Wallet
         // TODO: If balance < bet -> Reject bet
         // TODO: set balance = balance - bet
         // TODO: Result = GameEngine.Spin(bet)
         // TODO: Return result
-        return Ok();
+        Console.WriteLine(result.ToString());
+        Console.WriteLine(result.prisonerMovements.Count);
+        Console.WriteLine(result.initialGrid.Count);
+        return Ok(result);
     }
 }

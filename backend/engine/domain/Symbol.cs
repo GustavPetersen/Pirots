@@ -1,5 +1,3 @@
-using Microsoft.AspNetCore.SignalR;
-
 public abstract record Symbol { }
 
 public record Empty : Symbol { }

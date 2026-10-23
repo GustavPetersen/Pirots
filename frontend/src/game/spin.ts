@@ -1,7 +1,7 @@
 import { QueryClient } from '@tanstack/react-query';
 import { NO_SYMBOL, type SlotSymbol } from '../utils/types';
 import { Container, Sprite, Texture, } from 'pixi.js';
-import { getReels } from '../api/queries';
+import { getReels, getSpin } from '../api/queries';
 import type { Queue } from '../utils/queue';
 import { UnionFind } from '../utils/unionfind';
 
@@ -11,6 +11,12 @@ export async function spin(gridSize: number, sprites: Container, qc: QueryClient
         queryKey: ["getReels"],
         queryFn: getReels(6, 60),
     });
+
+    const testMyMeat: any = await qc.query({
+        queryKey: ["getSpin"],
+        queryFn: getSpin(6, 60),
+    });
+    console.log(testMyMeat);
 
     while (true) {
         // Fill board with symbols from reels
