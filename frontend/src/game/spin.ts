@@ -12,7 +12,8 @@ export async function spin(gridSize: number, sprites: Container, qc: QueryClient
 
     await draw(sprites, spinResult.initialGrid, 200);
     await drawPrisoners(sprites, spinResult, 200);
-
+    await drawMovements();
+    
     console.log(spinResult);
 }
 
@@ -52,16 +53,36 @@ async function drawPrisoners(sprites: Container, spinResult: SpinResult, ms: num
         "Orange": Texture.from('p_orange'),
     };
 
-
+    // TODO: Fix this 
     const prisoners = spinResult.prisonerMovements;
     const bluePosition = prisoners.Blue.startingPosition;
-
     const bluePrisonerTexture = symbolTextures["Blue"];
-    const bluePrisonerContainer = sprites.getChildAt<Container>(i); // assumed to exist
-    const sprite = container.getChildByLabel('tile_fg') as Sprite; // assumed to exist
-    sprite.texture = newTexture;
-    
+    const bluePrisonerContainer = sprites.getChildAt<Container>(bluePosition.x*6 + bluePosition.y); // assumed to exist
+    const blueSprite = bluePrisonerContainer.getChildByLabel('tile_fg') as Sprite; // assumed to exist
+    blueSprite.texture = bluePrisonerTexture;
 
+    const redPosition = prisoners.Red.startingPosition;
+    const redPrisonerTexture = symbolTextures["Red"];
+    const redPrisonerContainer = sprites.getChildAt<Container>(redPosition.x*6 + redPosition.y); // assumed to exist
+    const redSprite = redPrisonerContainer.getChildByLabel('tile_fg') as Sprite; // assumed to exist
+    redSprite.texture = redPrisonerTexture;
+
+    const greenPosition = prisoners.Green.startingPosition;
+    const greenPrisonerTexture = symbolTextures["Green"];
+    const greenPrisonerContainer = sprites.getChildAt<Container>(greenPosition.x*6 + greenPosition.y); // assumed to exist
+    const greenSprite = greenPrisonerContainer.getChildByLabel('tile_fg') as Sprite; // assumed to exist
+    greenSprite.texture = greenPrisonerTexture;
+
+    const orangePosition = prisoners.Orange.startingPosition;
+    const orangePrisonerTexture = symbolTextures["Orange"];
+    const orangePrisonerContainer = sprites.getChildAt<Container>(orangePosition.x*6 + orangePosition.y); // assumed to exist
+    const orangeSprite = orangePrisonerContainer.getChildByLabel('tile_fg') as Sprite; // assumed to exist
+    orangeSprite.texture = orangePrisonerTexture;
+        
     await new Promise((resolve) => setTimeout(resolve, ms));
 
+}
+
+async function drawMovements() {
+    
 }
