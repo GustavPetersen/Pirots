@@ -61,12 +61,25 @@ public class BackendController : ControllerBase
             int loc;
             do
             {
-                loc = Random.Shared.Next(boardSize*boardSize);
+                loc = Random.Shared.Next(boardSize * boardSize);
             }
             while (locations.Contains(loc));
             locations.Add(loc);
         }
 
         return Ok(locations);
+    }
+
+    [HttpGet]
+    [Route("spin")]
+    public async Task<IActionResult> SpinReel(int bet, int idempotencyKey)
+    {
+        // TODO: DO NOT RUN SPIN WITH SAME KEY
+        // TODO: Load Player Wallet
+        // TODO: If balance < bet -> Reject bet
+        // TODO: set balance = balance - bet
+        // TODO: Result = GameEngine.Spin(bet)
+        // TODO: Return result
+        return Ok();
     }
 }
