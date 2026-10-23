@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Net.Http.Headers;
 
@@ -85,5 +86,6 @@ public class BackendController : ControllerBase
         Console.WriteLine(result.prisonerMovements.Count);
         Console.WriteLine(result.initialGrid.Count);
         return Ok(result);
+        
     }
 }

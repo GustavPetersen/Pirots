@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore.Diagnostics;
+using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
 
 public class GameEngine
 {
@@ -104,8 +105,28 @@ public class GameEngine
     {
         List<Prisoner> prisoners = PlacePrisoners();
         List<List<Symbol>> grid = PlaceGrid(prisoners);
-        List<List<Symbol>> initialGrid = grid;
-
+        List<List<Symbol>> initialGrid = new(grid.Count);
+        foreach (List<Symbol> l in grid)
+        {
+            List<Symbol> temp = new(l.Count);
+            foreach (Symbol s in l)
+            {
+                switch (s)
+                {
+                    case Empty e: 
+                        temp.Add(new Empty());
+                        break;
+                    case Diamond d: 
+                        temp.Add(new Diamond(d.color));
+                        break;
+                    default: 
+                        temp.Add(new Empty());
+                        break;
+                }
+            }
+            initialGrid.Add(temp);
+        }
+        
         int totalWin = 0;
 
         Dictionary<Color, Tuple<Position, List<Position>>> prisonerMovements = new();
@@ -122,9 +143,7 @@ public class GameEngine
                 grid[position.X][position.Y] = new Empty();
             }
         }
-        Console.WriteLine(initialGrid);
-        Console.WriteLine(initialGrid[0]);
-        Console.WriteLine(initialGrid[0][0]);
+
         return new SpinResult(initialGrid, prisonerMovements);
     }  
 }
