@@ -129,13 +129,13 @@ public class GameEngine
         
         int totalWin = 0;
 
-        Dictionary<Color, Tuple<Position, List<Position>>> prisonerMovements = new();
+        Dictionary<Color, SpinMovements> prisonerMovements = new();
 
         foreach (Prisoner prisoner in prisoners)
         {
             // TODO: Add movements to final return for prisoner with color
             List<Position> movedPositions = CollectConnected(grid, prisoner);
-            prisonerMovements.Add(prisoner.Color, new Tuple<Position, List<Position>>(prisoner.Position, movedPositions));
+            prisonerMovements.Add(prisoner.Color, new SpinMovements(prisoner.Position, movedPositions));
             totalWin += CalculatePayout(movedPositions, grid);
             foreach (Position position in movedPositions)
             {

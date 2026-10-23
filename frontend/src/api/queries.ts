@@ -1,5 +1,4 @@
-import { Queue } from "../utils/queue";
-import type { SlotSymbol } from "../utils/types";
+import type { SpinResult } from "../utils/types";
 
 async function apiRequest<T>(url: string): Promise<T> {
     const baseUrl = import.meta.env.VITE_API_URL ?? "/api";
@@ -13,28 +12,7 @@ async function apiRequest<T>(url: string): Promise<T> {
     return data as Promise<T>;
 }
 
-export function getReels(nReels: number, symbolsPerReel: number): () => Promise<Queue<SlotSymbol>[]> {
-    return async () => {
-        const params = {
-            nReels: String(nReels),
-            symbolsPerReel: String(symbolsPerReel),
-        };
-        const queryString = new URLSearchParams(params).toString();
-
-        const arrays = await apiRequest<number[][]>(`/reels?${queryString}`);
-        const reels: Queue<SlotSymbol>[] = [];
-
-        arrays.forEach(arr => {
-            const reel = new Queue<SlotSymbol>();
-            arr.forEach(n => reel.pushBack(n as SlotSymbol));
-            reels.push(reel);
-        })
-
-        return reels;
-    }
-}
-
-export function getSpin(bet: number, idempotencyKey: number): () => Promise<any> {
+export function getSpin(bet: number, idempotencyKey: number): () => Promise<SpinResult> {
     return async () => {
         const params = {
             bet: String(bet),
@@ -42,7 +20,7 @@ export function getSpin(bet: number, idempotencyKey: number): () => Promise<any>
         };
 
         const queryString = new URLSearchParams(params).toString();
-        const result = await apiRequest(`/spin?${queryString}`);
+        const result = await apiRequest<SpinResult>(`/spin?${queryString}`);
 
         return result;
     }
