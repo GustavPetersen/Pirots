@@ -3,35 +3,28 @@ export type SpinResult = {
     prisonerMovements: {
                             Blue: 
                             {
-                                startingPosition: 
-                                {
-                                    x: number, y: number
-                                }
-                                movements: Array<{x: number, y: number}>
+                                startingPosition: Position
+                                movements: Array<Position>
                             },
                             Green: 
                             {
-                                startingPosition: 
-                                {
-                                    x: number, y: number
-                                }
-                                movements: Array<{x: number, y: number}>
+                                startingPosition: Position
+                                movements: Array<Position>
                             },
                             Orange: 
                             {
-                                startingPosition: 
-                                {
-                                    x: number, y: number
-                                }
-                                movements: Array<{x: number, y: number}>
+                                startingPosition: Position
+                                movements: Array<Position>
                             },
                             Red: 
                             {
-                                startingPosition: 
-                                {
-                                    x: number, y: number
-                                }
-                                movements: Array<{x: number, y: number}>
+                                startingPosition: Position
+                                movements: Array<Position>
                             }
                         }
+};
+
+export type Position = {
+    x: number,
+    y: number,
 };
