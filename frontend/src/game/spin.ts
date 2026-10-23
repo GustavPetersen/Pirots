@@ -11,6 +11,7 @@ export async function spin(gridSize: number, sprites: Container, qc: QueryClient
     });
 
     await draw(sprites, spinResult.initialGrid, 200);
+    await drawPrisoners(sprites, spinResult, 200);
 
     console.log(spinResult);
 }
@@ -41,5 +42,26 @@ async function draw(sprites: Container, board: Array<Array<{name: string}>>, ms:
 
     await new Promise((resolve) => setTimeout(resolve, ms));
 
+}
+
+async function drawPrisoners(sprites: Container, spinResult: SpinResult, ms: number) {
+    const symbolTextures: Record<string, Texture> = {
+        "Green": Texture.from('p_green'),
+        "Blue": Texture.from('p_blue'),
+        "Red": Texture.from('p_red'),
+        "Orange": Texture.from('p_orange'),
+    };
+
+
+    const prisoners = spinResult.prisonerMovements;
+    const bluePosition = prisoners.Blue.startingPosition;
+
+    const bluePrisonerTexture = symbolTextures["Blue"];
+    const bluePrisonerContainer = sprites.getChildAt<Container>(i); // assumed to exist
+    const sprite = container.getChildByLabel('tile_fg') as Sprite; // assumed to exist
+    sprite.texture = newTexture;
+    
+
+    await new Promise((resolve) => setTimeout(resolve, ms));
 
 }
