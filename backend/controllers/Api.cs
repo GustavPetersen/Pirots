@@ -82,10 +82,6 @@ public class BackendController : ControllerBase
         // TODO: set balance = balance - bet
         // TODO: Result = GameEngine.Spin(bet)
         // TODO: Return result
-        Console.WriteLine(result.ToString());
-        Console.WriteLine(result.prisonerMovements.Count);
-        Console.WriteLine(result.initialGrid.Count);
         return Ok(result);
-        
     }
 }

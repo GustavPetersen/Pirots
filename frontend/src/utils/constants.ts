@@ -1,6 +1,6 @@
 import type { PrisonerColor } from "./types";
 
-export const PRISONER_COLORS = ["Green", "Blue", "Red", "Orange"];
+export const PRISONER_COLORS = ["Green", "Blue", "Red", "Orange"] as const;
 export const GRID_WIDTH = 6;
 export const sleep = (ms: number) => new Promise<void>((resolve) => setTimeout(resolve, ms));
 export const prisonerTextureIds: Record<PrisonerColor, string> = {

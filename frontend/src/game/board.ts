@@ -138,11 +138,11 @@ export default async function createBoard(container: HTMLElement): Promise<Appli
     spinButton.cursor = 'pointer';
     spinButton.on('pointerdown', async () => {
         jackpotSound.play();
-        await spin(gridSize - 2, middleTiles, queryClient);
+        await spin(middleTiles, queryClient);
     });
 
     app.stage.addChild(spinButton);
-    //spin(gridSize - 2, middleTiles, queryClient); // Spin the initail diamonds when loading the page
+    //spin(middleTiles, queryClient); // Spin the initail diamonds when loading the page
 
     return app;
 }
