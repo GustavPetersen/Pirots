@@ -1,3 +1,5 @@
+namespace backend.engine.domain;
+
 public struct Position
 {
     public Position(int x, int y)

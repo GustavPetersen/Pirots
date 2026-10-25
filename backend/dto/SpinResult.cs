@@ -1,10 +1,7 @@
-public record SpinMovements (Position startingPosition, List<Position> movements)
+using backend.engine.domain;
+
+public record SpinResult(List<List<Symbol>> initialBoard, List<List<Position>> prisonerMovements)
 {
-    public Position startingPosition {get; set;} = startingPosition;
-    public List<Position> movements {get; set;} = movements;
-}
-public record SpinResult (List<List<Symbol>> initialGrid, Dictionary<Color, SpinMovements> prisonerMovements)
-{
-    public List<List<Symbol>> initialGrid { get; set; } = initialGrid;
-    public Dictionary<Color, SpinMovements> prisonerMovements { get; set; } = prisonerMovements;
+    public List<List<Symbol>> initialGrid { get; set; } = initialBoard;
+    public List<List<Position>> prisonerMovements { get; set; } = prisonerMovements;
 }

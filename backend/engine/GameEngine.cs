@@ -1,5 +1,7 @@
-using Microsoft.EntityFrameworkCore.Diagnostics;
-using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
+namespace backend.engine;
+
+using backend.engine.domain;
+using backend.engine.config;
 
 public class GameEngine
 {
@@ -16,17 +18,61 @@ public class GameEngine
         return prisoners;
     }
 
+    private static Position[] GetPrisonerStartLocations()
+    {
+        Random random = new();
+        int numColors = Enum.GetValues<Color>().Length;
+
+        Position[] locations = new Position[numColors];
+        for (int i = 0; i < numColors; i++)
+        {
+            locations[i] = new(random.Next(GameConfig.xDim), random.Next(GameConfig.yDim));
+        }
+
+        return locations;
+    }
+
+    private static Symbol[,] CreateBoard()
+    {
+        Random random = new Random();
+        Symbol[,] board = new Symbol[GameConfig.xDim, GameConfig.yDim];
+        Color[] colors = Enum.GetValues<Color>();
+
+        // Fill the board with diamonds
+        for (int x = 0; x < GameConfig.xDim; x++)
+        {
+            for (int y = 0; y < GameConfig.yDim; y++)
+            {
+                board[x, y] = new Diamond(colors[random.Next(colors.Length)], 1);
+            }
+        }
+
+        // Place prisoners
+        HashSet<Position> taken = new();
+        foreach (Color color in colors)
+        {
+            Position pos;
+            do pos = new(random.Next(GameConfig.xDim), random.Next(GameConfig.yDim));
+            while (taken.Contains(pos));
+
+            taken.Add(pos);
+            board[pos.X, pos.Y] = new Prisoner(color);
+        }
+
+        return board;
+    }
+
     private static List<List<Symbol>> PlaceGrid(List<Prisoner> prisoners)
     {
         Random random = new Random();
         Color[] colors = Enum.GetValues<Color>();
 
-        List<List<Symbol>> grid = new(GameConfig.numOfReels);
+        List<List<Symbol>> grid = new(GameConfig.xDim);
 
-        for (int x = 0; x < GameConfig.numOfReels; x++)
+        for (int x = 0; x < GameConfig.xDim; x++)
         {
-            List<Symbol> column = new(GameConfig.symbolsPerReel);
-            for (int y = 0; y < GameConfig.symbolsPerReel; y++)
+            List<Symbol> column = new(GameConfig.yDim);
+            for (int y = 0; y < GameConfig.yDim; y++)
             {
                 if (prisoners.Any(p => p.Position.X == x && p.Position.Y == y))
                 {
@@ -113,20 +159,20 @@ public class GameEngine
             {
                 switch (s)
                 {
-                    case Empty e: 
+                    case Empty e:
                         temp.Add(new Empty());
                         break;
-                    case Diamond d: 
+                    case Diamond d:
                         temp.Add(new Diamond(d.color));
                         break;
-                    default: 
+                    default:
                         temp.Add(new Empty());
                         break;
                 }
             }
             initialGrid.Add(temp);
         }
-        
+
         int totalWin = 0;
 
         Dictionary<Color, SpinMovements> prisonerMovements = new();
@@ -145,5 +191,5 @@ public class GameEngine
         }
 
         return new SpinResult(initialGrid, prisonerMovements);
-    }  
+    }
 }

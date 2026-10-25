@@ -70,7 +70,13 @@ public class BackendController : ControllerBase
 
         return Ok(locations);
     }
-
+    /// <summary>
+    /// Simulates a spin with the given bet size returns instructions for frontend
+    /// visualization and the payout (not implemented)
+    /// </summary>
+    /// <param name="bet"> The amount of cash to spin for </param>
+    /// <param name="idempotencyKey"> An unique spin identifier to prevent double spins </param>
+    /// <returns>Instructions to render the board changes and the final payout (not implemented) </returns>
     [HttpGet]
     [Route("spin")]
     public async Task<IActionResult> SpinReel(int bet, int idempotencyKey)
