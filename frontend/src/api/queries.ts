@@ -1,6 +1,8 @@
+import * as z from "zod";
 import type { SpinResult } from "../utils/types";
+import { SPIN_RESULT_SCHEMA } from "../utils/constants";
 
-async function apiRequest<T>(url: string): Promise<T> {
+async function apiRequest<T>(url: string, schema: z.ZodType<T>): Promise<T> {
     const baseUrl = import.meta.env.VITE_API_URL ?? "/api";
 
     const response = await fetch(`${baseUrl}${url}`);
@@ -8,8 +10,7 @@ async function apiRequest<T>(url: string): Promise<T> {
         throw new Error(`HTTP error! Status: ${response.status}`);
     }
 
-    const data = await response.json();
-    return data as Promise<T>;
+    return schema.parse(await response.json());
 }
 
 export function getSpin(bet: number, idempotencyKey: number): () => Promise<SpinResult> {
@@ -20,8 +21,6 @@ export function getSpin(bet: number, idempotencyKey: number): () => Promise<Spin
         };
 
         const queryString = new URLSearchParams(params).toString();
-        const result = await apiRequest<SpinResult>(`/spin?${queryString}`);
-
-        return result;
+        return await apiRequest<SpinResult>(`/spin?${queryString}`, SPIN_RESULT_SCHEMA);
     }
 }
