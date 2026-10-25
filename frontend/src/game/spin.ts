@@ -29,7 +29,7 @@ function setTileTexture(sprites: Container, pos: Position, texture: Texture) {
 async function drawBoard(sprites: Container, board: SpinResult["initialBoard"], ms: number) {
     board.forEach((column, x) => {
         column.forEach((symbol, y) => {
-            const pos = {x, y};
+            const pos = { x, y };
             const texture = getSymbolTexture(symbol);
             setTileTexture(sprites, pos, texture);
         });

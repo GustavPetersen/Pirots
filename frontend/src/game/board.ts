@@ -1,32 +1,32 @@
 import { QueryClient } from '@tanstack/react-query';
-import { Application, Container, Sprite, Assets, Texture} from 'pixi.js';
+import { Application, Container, Sprite, Assets, Texture } from 'pixi.js';
 import { Howl } from 'howler';
 import { spin } from './spin';
 
 export default async function createBoard(container: HTMLElement): Promise<Application> {
     const app = new Application();
-    await app.init( {backgroundColor: 0x000000, resizeTo: window});
+    await app.init({ backgroundColor: 0x000000, resizeTo: window });
     container.appendChild(app.canvas);
-    
+
     // Load assets
-    await Assets.init({basePath: 'Assets/Sprites/'})
+    await Assets.init({ basePath: 'Assets/Sprites/' })
     await Assets.load([
-        {alias: 'bg', src: 'slots_background.png'},
-        {alias: 'test', src: 'pirots_logo_650.png'},
-        {alias: 'tile_mid', src: 'slots_tile.png'},
-        {alias: 'tile_corner', src: 'slots_tile_corner.png'},
-        {alias: 'tile_straight', src: 'slots_tile_straight.png'},
-        {alias: 'spin_button', src: 'slots_spin_button.png'},
-        {alias: 'd_green', src: 'slots_diamond_green.png'},
-        {alias: 'd_blue', src: 'slots_diamond_blue.png'},
-        {alias: 'd_orange', src: 'slots_diamond_orange.png'},
-        {alias: 'd_red', src: 'slots_diamond_red.png'},
-        {alias: 'p_green', src: 'slots_prisoner_green.png'},
-        {alias: 'p_blue', src: 'slots_prisoner_blue.png'},
-        {alias: 'p_orange', src: 'slots_prisoner_orange.png'},
-        {alias: 'p_red', src: 'slots_prisoner_red.png'},
-        {alias: 'empty', src: 'transparent.png'},
-        {alias: 'pirots', src: 'pirots_logo_650.png'},
+        { alias: 'bg', src: 'slots_background.png' },
+        { alias: 'test', src: 'pirots_logo_650.png' },
+        { alias: 'tile_mid', src: 'slots_tile.png' },
+        { alias: 'tile_corner', src: 'slots_tile_corner.png' },
+        { alias: 'tile_straight', src: 'slots_tile_straight.png' },
+        { alias: 'spin_button', src: 'slots_spin_button.png' },
+        { alias: 'd_green', src: 'slots_diamond_green.png' },
+        { alias: 'd_blue', src: 'slots_diamond_blue.png' },
+        { alias: 'd_orange', src: 'slots_diamond_orange.png' },
+        { alias: 'd_red', src: 'slots_diamond_red.png' },
+        { alias: 'p_green', src: 'slots_prisoner_green.png' },
+        { alias: 'p_blue', src: 'slots_prisoner_blue.png' },
+        { alias: 'p_orange', src: 'slots_prisoner_orange.png' },
+        { alias: 'p_red', src: 'slots_prisoner_red.png' },
+        { alias: 'empty', src: 'transparent.png' },
+        { alias: 'pirots', src: 'pirots_logo_650.png' },
     ]);
 
     // Create background
@@ -47,7 +47,7 @@ export default async function createBoard(container: HTMLElement): Promise<Appli
             var texture = Texture.EMPTY;
             var subContainer = edgeTiles;
             var rotation = 0;
-            var anchorX = 0; 
+            var anchorX = 0;
             var anchorY = 0;
 
             if (i != 0 && i != gridSize - 1 &&                  // If middle tile
@@ -99,7 +99,7 @@ export default async function createBoard(container: HTMLElement): Promise<Appli
     // Add placeholder foreground sprites for all middle tiles
     for (var i = 0; i < middleTiles.children.length; i++) {
         const tile = middleTiles.getChildAt<Container>(i);
-        const tileFg = Sprite.from('transparent');
+        const tileFg = Sprite.from('empty');
 
         tileFg.label = 'tile_fg';
         tileFg.setSize(tileSize * 0.8);
@@ -117,7 +117,7 @@ export default async function createBoard(container: HTMLElement): Promise<Appli
         background.width / 2 - tiles.width / 2,
         background.height / 2 - tiles.height / 2
     );
-    
+
     app.stage.addChild(tiles);
 
     // Create spin button
@@ -131,7 +131,7 @@ export default async function createBoard(container: HTMLElement): Promise<Appli
     );
 
     // Setup api call on button click
-    const jackpotSound = new Howl({src: ['Assets/Sounds/JACKPOT.mp3']});
+    const jackpotSound = new Howl({ src: ['Assets/Sounds/JACKPOT.mp3'] });
     const queryClient = new QueryClient();
 
     spinButton.eventMode = 'static';
