@@ -1,9 +1,13 @@
 using System.Reflection;
 using Microsoft.OpenApi;
+using backend.converters;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddJsonOptions(options =>
+{
+    options.JsonSerializerOptions.Converters.Add(new SymbolJsonConverter());
+});
 builder.Services.AddCors(options => // TODO: Actually consider proper COORS policy
 {
     options.AddPolicy("AllowAll", policy =>

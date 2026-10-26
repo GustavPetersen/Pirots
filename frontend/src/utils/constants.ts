@@ -1,19 +1,24 @@
-import type { PrisonerColor } from "./types";
+import * as z from "zod";
+import { Texture } from "pixi.js";
+import type { SlotSymbol } from "./types";
 
-export const PRISONER_COLORS = ["Green", "Blue", "Red", "Orange"] as const;
-export const GRID_WIDTH = 6;
+export const PRISONERS = ["p_green", "p_blue", "p_red", "p_orange"] as const;
+export const ALL_SYMBOLS = [...PRISONERS, "empty", "d_green", "d_blue", "d_red", "d_orange"] as const
+
+export const SLOT_SYMBOL_SCHEMA = z.enum(ALL_SYMBOLS);
+
+export const POSITION_SCHEMA = z.object({
+    x: z.number(),
+    y: z.number(),
+});
+
+export const SPIN_RESULT_SCHEMA = z.object({
+    initialBoard: z.array(z.array(SLOT_SYMBOL_SCHEMA)),
+    prisonerMovements: z.array(z.array(POSITION_SCHEMA)),
+});
+
+export const BOARD_WIDTH = 6;
+
 export const sleep = (ms: number) => new Promise<void>((resolve) => setTimeout(resolve, ms));
-export const prisonerTextureIds: Record<PrisonerColor, string> = {
-    Green: "p_green",
-    Blue: "p_blue",
-    Red: "p_red",
-    Orange: "p_orange",
-};
-
-export const symbolTextureIds: Record<string, string> = {
-    empty: "transparent",
-    green: "d_green",
-    blue: "d_blue",
-    red: "d_red",
-    orange: "d_orange",
-};
+// Useful for ensuring type-safety with string literals
+export const getSymbolTexture = (s: SlotSymbol) => Texture.from(s); 

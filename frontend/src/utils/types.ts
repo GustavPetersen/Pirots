@@ -1,18 +1,6 @@
-import type { PRISONER_COLORS } from "./constants";
+import * as z from "zod";
+import { POSITION_SCHEMA, SLOT_SYMBOL_SCHEMA, SPIN_RESULT_SCHEMA } from "./constants";
 
-export type Position = {
-  x: number;
-  y: number;
-};
-
-export type PrisonerColor = (typeof PRISONER_COLORS)[number];
-
-export type PrisonerMovement = {
-  startingPosition: Position;
-  movements: Array<Position>;
-};
-
-export type SpinResult = {
-  initialGrid: Array<Array<{ name: string }>>;
-  prisonerMovements: Record<PrisonerColor, PrisonerMovement>;
-};
+export type Position = z.infer<typeof POSITION_SCHEMA>;
+export type SlotSymbol = z.infer<typeof SLOT_SYMBOL_SCHEMA>;
+export type SpinResult = z.infer<typeof SPIN_RESULT_SCHEMA>;

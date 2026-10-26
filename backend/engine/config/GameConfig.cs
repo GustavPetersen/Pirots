@@ -1,10 +1,12 @@
-using Microsoft.VisualBasic;
+namespace backend.engine.config;
+
+using backend.engine.domain;
 
 public static class GameConfig
 {
-    public static int numOfReels = 6;
-    public static int symbolsPerReel = 6;
-    public static Dictionary<Color, double> colorValue = new Dictionary<Color, double>
+    public static readonly int xDim = 6;
+    public static readonly int yDim = 6;
+    public static readonly Dictionary<Color, double> colorbaseMultiplier = new()
     {
         [Color.Green] = 0.1,
         [Color.Blue] = 0.2,
@@ -12,7 +14,7 @@ public static class GameConfig
         [Color.Red] = 0.3
     };
 
-    public static Dictionary<Color, string> colorString = new Dictionary<Color, String>
+    public static readonly Dictionary<Color, string> colorString = new()
     {
         [Color.Green] = "green",
         [Color.Blue] = "blue",

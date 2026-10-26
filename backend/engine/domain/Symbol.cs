@@ -1,26 +1,39 @@
+namespace backend.engine.domain;
+
+using backend.engine.config;
+
 public abstract record Symbol
 {
-    public abstract string name {get; set; }
-    
+    public abstract string Name { get; set; }
+
 }
 
 public record Empty : Symbol
 {
-    public override string name
+    public override string Name
     {
-        get { return "empty"; }
+        get => "empty";
         set { }
     }
 }
 
-public record Diamond(Color c) : Symbol
+public record Diamond(Color Color, double Multiplier) : Symbol
 {
-    public Color color { get; set; } = c;
-    public double value => GameConfig.colorValue[color];
-
-        public override string name
+    public Color Color { get; set; } = Color;
+    public double Multiplier { get; set; } = Multiplier;
+    public override string Name
     {
-        get { return GameConfig.colorString[color]; }
+        get => $"d_{GameConfig.colorString[Color]}";
+        set { }
+    }
+}
+
+public record Prisoner(Color Color) : Symbol
+{
+    public Color Color { get; set; } = Color;
+    public override string Name
+    {
+        get => $"p_{GameConfig.colorString[Color]}";
         set { }
     }
 }
