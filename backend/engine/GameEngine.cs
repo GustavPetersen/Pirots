@@ -15,6 +15,7 @@ public class GameEngine
         for (int x = 0; x < GameConfig.xDim; x++)
         {
             board[x] = new Symbol[GameConfig.yDim];
+            Array.Fill(board[x], Empty.Instance);
         }
 
         // Fill the board with diamonds
@@ -70,7 +71,7 @@ public class GameEngine
                 {
                     path.Add(adj);
                     queue.Enqueue(adj);
-                    board[current.X][current.Y] = new Empty();
+                    board[current.X][current.Y] = Empty.Instance;
                 }
             }
         }
