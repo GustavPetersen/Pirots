@@ -2,14 +2,13 @@ namespace backend.engine;
 
 using backend.engine.domain;
 using backend.engine.config;
+using System.Diagnostics;
 
 public class GameEngine
 {
     public static SpinResult Spin(int bet)
     {
-        Random random = new Random();
         Symbol[][] board = new Symbol[GameConfig.xDim][];
-        Color[] colors = Enum.GetValues<Color>();
 
         // Initalize jagged array
         for (int x = 0; x < GameConfig.xDim; x++)
@@ -18,44 +17,73 @@ public class GameEngine
             Array.Fill(board[x], Empty.Instance);
         }
 
-        // Fill the board with diamonds
-        for (int x = 0; x < GameConfig.xDim; x++)
+        Random random = new();
+        Color[] colors = Enum.GetValues<Color>();
+        Dictionary<Color, Position> pPlacements = [];
+        List<List<Position>> pWalks = [];
+        List<Symbol> symbolReel = [];
+
+        // Simulate board until no prisoner can walk anymore
+        int walkCountBefore;
+        do
         {
-            for (int y = 0; y < GameConfig.yDim; y++)
+            Dictionary<Position, Symbol> boardChanges = [];
+
+            // Fill missing diamonds
+            for (int x = 0; x < GameConfig.xDim; x++)
             {
-                board[x][y] = new Diamond(colors[random.Next(colors.Length)], 1);
+                for (int y = 0; y < GameConfig.yDim; y++)
+                {
+                    if (board[x][y] != Empty.Instance) continue;
+
+                    Diamond symbol = new(colors[random.Next(colors.Length)], 1);
+                    board[x][y] = symbol;
+                    boardChanges.Add(new(x, y), symbol);
+                }
             }
-        }
 
-        // Place prisoners
-        Dictionary<Color, Position> pLocations = [];
-        foreach (Color color in colors)
-        {
-            Position pos;
-            do pos = new(random.Next(GameConfig.xDim), random.Next(GameConfig.yDim));
-            while (pLocations.ContainsValue(pos));
+            // Fill missing prisoners
+            foreach (Color color in colors)
+            {
+                if (pPlacements.ContainsKey(color)) continue;
 
-            pLocations.Add(color, pos);
-            board[pos.X][pos.Y] = new Prisoner(color);
-        }
+                Position pos;
+                do pos = boardChanges.ElementAt(random.Next(boardChanges.Count)).Key;
+                while (pPlacements.ContainsValue(pos));
 
-        Symbol[][] initialBoard = [.. board.Select(inner => inner.ToArray())];
+                Prisoner symbol = new(color);
+                board[pos.X][pos.Y] = symbol;
+                boardChanges[pos] = symbol;
 
-        // Walk prisoners
-        List<List<Position>> movements = [];
-        foreach (Color color in colors)
-        {
-            movements.Add(WalkPrisoner(board, color, pLocations[color]));
-        }
+                pPlacements.Add(color, pos);
+            }
 
-        return new SpinResult(initialBoard, movements);
+            symbolReel.AddRange(boardChanges.Values);
+
+            // Walk prisoners
+            walkCountBefore = pWalks.Count;
+            foreach (Color color in colors)
+            {
+                List<Position> walk = WalkPrisoner(board, color, pPlacements);
+                if (walk.Count > 1) pWalks.Add(walk); // walk always contains starting position
+            }
+
+            // TODO: Make all symbols fall
+            Console.WriteLine("brh");
+
+
+        } while (pWalks.Count > walkCountBefore);
+
+        return new SpinResult(symbolReel, pWalks);
     }
 
-    private static List<Position> WalkPrisoner(Symbol[][] board, Color color, Position start)
+    private static List<Position> WalkPrisoner(Symbol[][] board, Color color, Dictionary<Color, Position> pPlacements)
     {
-        List<Position> path = []; // Could maintain a parallel HashSet for O(1) lookups
+        List<Position> walk = []; // Could maintain a parallel HashSet for O(1) lookups
         Queue<Position> queue = [];
-        path.Add(start);
+
+        Position start = pPlacements[color];
+        walk.Add(start);
         queue.Enqueue(start);
 
         while (queue.Count != 0)
@@ -67,16 +95,20 @@ public class GameEngine
             {
                 if (board[adj.X][adj.Y] is Diamond d
                     && d.Color == color
-                    && !path.Contains(adj)) // O(n) lookup, but n is small
+                    && !walk.Contains(adj)) // O(n) lookup, but n is small
                 {
-                    path.Add(adj);
+                    walk.Add(adj);
                     queue.Enqueue(adj);
                     board[current.X][current.Y] = Empty.Instance;
                 }
             }
         }
 
-        return path;
+        Position finalPos = walk.Last();
+        pPlacements[color] = finalPos;
+        board[finalPos.X][finalPos.Y] = new Prisoner(color);
+
+        return walk;
     }
 }
 
