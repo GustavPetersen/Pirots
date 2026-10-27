@@ -68,11 +68,24 @@ public class GameEngine
                 if (walk.Count > 1) pWalks.Add(walk); // walk always contains starting position
             }
 
-            // TODO: Make all symbols fall
-            Console.WriteLine("brh");
+            // Push all symbols down
+            for (int x = GameConfig.xDim - 1; x >= 0; x--)
+            {
+                for (int y = GameConfig.yDim - 2; y >= 0; y--) // skip last row
+                {
+                    if (board[x][y + 1] != Empty.Instance) continue;
+                    if (board[x][y] is Prisoner p) pPlacements[p.Color] = new(x, y + 1);
 
+                    board[x][y + 1] = board[x][y];
+                    board[x][y] = Empty.Instance;
+                }
+            }
+
+            Console.WriteLine("bruh");
 
         } while (pWalks.Count > walkCountBefore);
+
+        Console.WriteLine("");
 
         return new SpinResult(symbolReel, pWalks);
     }
