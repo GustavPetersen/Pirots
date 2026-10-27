@@ -42,36 +42,40 @@ public class GameEngine
 
         // Walk prisoners
         List<List<Position>> movements = [];
-        for (int i = 0; i < colors.Length; i++)
+        foreach (Color color in colors)
         {
-            Color color = colors[i];
-            Queue<Position> queue = [];
-            HashSet<Position> visited = [];
-
-            queue.Enqueue(pLocations[color]);
-            movements.Add([pLocations[color]]);
-            visited.Add(pLocations[color]);
-
-            while (queue.Count != 0)
-            {
-                Position current = queue.Dequeue();
-                Position[] adjacent = current.Adjacent(GameConfig.xDim - 1, GameConfig.yDim - 1);
-
-                foreach (Position adj in adjacent)
-                {
-                    if (board[adj.X][adj.Y] is Diamond d
-                        && d.Color == color
-                        && !visited.Contains(adj))
-                    {
-                        queue.Enqueue(adj);
-                        movements[i].Add(adj);
-                        visited.Add(adj);
-                        board[current.X][current.Y] = new Empty();
-                    }
-                }
-            }
+            movements.Add(WalkPrisoner(board, color, pLocations[color]));
         }
 
         return new SpinResult(initialBoard, movements);
     }
+
+    private static List<Position> WalkPrisoner(Symbol[][] board, Color color, Position start)
+    {
+        List<Position> path = []; // Could maintain a parallel HashSet for O(1) lookups
+        Queue<Position> queue = [];
+        path.Add(start);
+        queue.Enqueue(start);
+
+        while (queue.Count != 0)
+        {
+            Position current = queue.Dequeue();
+            Position[] adjacent = current.Adjacent(GameConfig.xDim - 1, GameConfig.yDim - 1);
+
+            foreach (Position adj in adjacent)
+            {
+                if (board[adj.X][adj.Y] is Diamond d
+                    && d.Color == color
+                    && !path.Contains(adj)) // O(n) lookup, but n is small
+                {
+                    path.Add(adj);
+                    queue.Enqueue(adj);
+                    board[current.X][current.Y] = new Empty();
+                }
+            }
+        }
+
+        return path;
+    }
 }
+
