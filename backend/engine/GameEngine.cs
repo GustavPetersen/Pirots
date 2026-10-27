@@ -2,7 +2,6 @@ namespace backend.engine;
 
 using backend.engine.domain;
 using backend.engine.config;
-using System.Diagnostics;
 
 public class GameEngine
 {
@@ -24,7 +23,7 @@ public class GameEngine
         List<Symbol> symbolReel = [];
 
         // Simulate board until no prisoner can walk anymore
-        int walkCountBefore;
+        bool pMoved;
         do
         {
             Dictionary<Position, Symbol> boardChanges = [];
@@ -61,11 +60,12 @@ public class GameEngine
             symbolReel.AddRange(boardChanges.Values);
 
             // Walk prisoners
-            walkCountBefore = pWalks.Count;
+            pMoved = false;
             foreach (Color color in colors)
             {
                 List<Position> walk = WalkPrisoner(board, color, pPlacements);
-                if (walk.Count > 1) pWalks.Add(walk); // walk always contains starting position
+                pWalks.Add(walk);
+                pMoved |= walk.Count > 1; // walk always contains starting position
             }
 
             // Push all symbols down
@@ -83,7 +83,7 @@ public class GameEngine
 
             Console.WriteLine("bruh");
 
-        } while (pWalks.Count > walkCountBefore);
+        } while (pMoved);
 
         Console.WriteLine("");
 
