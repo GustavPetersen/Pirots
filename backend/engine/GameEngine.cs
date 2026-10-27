@@ -2,43 +2,35 @@ namespace backend.engine;
 
 using backend.engine.domain;
 using backend.engine.config;
+using Microsoft.AspNetCore.DataProtection.Repositories;
 
 public class GameEngine
 {
     public static SpinResult Spin(int bet)
     {
-        Symbol[][] board = new Symbol[GameConfig.xDim][];
-
-        // Initalize jagged array
-        for (int x = 0; x < GameConfig.xDim; x++)
-        {
-            board[x] = new Symbol[GameConfig.yDim];
-            Array.Fill(board[x], Empty.Instance);
-        }
-
         Random random = new();
+        Symbol[] board = new Symbol[GameConfig.xDim * GameConfig.yDim]; // row-major order
+        Array.Fill(board, Empty.Instance);
+
         Color[] colors = Enum.GetValues<Color>();
-        Dictionary<Color, Position> pPlacements = [];
-        List<List<Position>> pWalks = [];
+        Dictionary<Color, int> pPlacements = [];
+        List<List<int>> pWalks = [];
         List<Symbol> symbolReel = [];
 
         // Simulate board until no prisoner can walk anymore
         bool pMoved;
         do
         {
-            Dictionary<Position, Symbol> boardChanges = [];
+            Dictionary<int, Symbol> boardChanges = [];
 
             // Fill missing diamonds
-            for (int x = 0; x < GameConfig.xDim; x++)
+            for (int tile = 0; tile < board.Length; tile++)
             {
-                for (int y = 0; y < GameConfig.yDim; y++)
-                {
-                    if (board[x][y] != Empty.Instance) continue;
+                if (board[tile] != Empty.Instance) continue;
 
-                    Diamond symbol = new(colors[random.Next(colors.Length)], 1);
-                    board[x][y] = symbol;
-                    boardChanges.Add(new(x, y), symbol);
-                }
+                Diamond symbol = new(colors[random.Next(colors.Length)], 1);
+                board[tile] = symbol;
+                boardChanges.Add(tile, symbol);
             }
 
             // Fill missing prisoners
@@ -46,82 +38,89 @@ public class GameEngine
             {
                 if (pPlacements.ContainsKey(color)) continue;
 
-                Position pos;
-                do pos = boardChanges.ElementAt(random.Next(boardChanges.Count)).Key;
-                while (pPlacements.ContainsValue(pos));
+                int tile;
+                do tile = boardChanges.ElementAt(random.Next(boardChanges.Count)).Key;
+                while (pPlacements.ContainsValue(tile));
 
                 Prisoner symbol = new(color);
-                board[pos.X][pos.Y] = symbol;
-                boardChanges[pos] = symbol;
+                board[tile] = symbol;
+                boardChanges[tile] = symbol;
 
-                pPlacements.Add(color, pos);
+                pPlacements.Add(color, tile);
             }
 
             symbolReel.AddRange(boardChanges.Values);
+            Console.WriteLine($"first: {board[0]} last: {board[board.Length - 1]}");
 
             // Walk prisoners
             pMoved = false;
             foreach (Color color in colors)
             {
-                List<Position> walk = WalkPrisoner(board, color, pPlacements);
+                List<int> walk = WalkPrisoner(board, color, pPlacements);
                 pWalks.Add(walk);
                 pMoved |= walk.Count > 1; // walk always contains starting position
             }
 
             // Push all symbols down
-            for (int x = GameConfig.xDim - 1; x >= 0; x--)
+            for (int tile = board.Length - GameConfig.xDim - 1; tile >= 0; tile--) // Skip last row
             {
-                for (int y = GameConfig.yDim - 2; y >= 0; y--) // skip last row
-                {
-                    if (board[x][y + 1] != Empty.Instance) continue;
-                    if (board[x][y] is Prisoner p) pPlacements[p.Color] = new(x, y + 1);
+                int downTile = tile + GameConfig.xDim;
+                if (board[downTile] != Empty.Instance) continue;
+                if (board[tile] is Prisoner p) pPlacements[p.Color] = downTile;
 
-                    board[x][y + 1] = board[x][y];
-                    board[x][y] = Empty.Instance;
-                }
+                board[downTile] = board[tile];
+                board[tile] = Empty.Instance;
             }
 
-            Console.WriteLine("bruh");
-
         } while (pMoved);
-
-        Console.WriteLine("");
 
         return new SpinResult(symbolReel, pWalks);
     }
 
-    private static List<Position> WalkPrisoner(Symbol[][] board, Color color, Dictionary<Color, Position> pPlacements)
+    private static List<int> WalkPrisoner(Symbol[] board, Color color, Dictionary<Color, int> pPlacements)
     {
-        List<Position> walk = []; // Could maintain a parallel HashSet for O(1) lookups
-        Queue<Position> queue = [];
+        List<int> walk = []; // Could maintain a parallel HashSet for O(1) lookups
+        Queue<int> queue = [];
 
-        Position start = pPlacements[color];
+        int start = pPlacements[color];
         walk.Add(start);
         queue.Enqueue(start);
 
         while (queue.Count != 0)
         {
-            Position current = queue.Dequeue();
-            Position[] adjacent = current.Adjacent(GameConfig.xDim - 1, GameConfig.yDim - 1);
+            int curTile = queue.Dequeue();
+            int[] adjacentTiles = [.. Adjacent(curTile)];
 
-            foreach (Position adj in adjacent)
+            foreach (int adj in adjacentTiles)
             {
-                if (board[adj.X][adj.Y] is Diamond d
+                if (board[adj] is Diamond d
                     && d.Color == color
                     && !walk.Contains(adj)) // O(n) lookup, but n is small
                 {
                     walk.Add(adj);
                     queue.Enqueue(adj);
-                    board[current.X][current.Y] = Empty.Instance;
+                    board[curTile] = Empty.Instance;
                 }
             }
         }
 
-        Position finalPos = walk.Last();
-        pPlacements[color] = finalPos;
-        board[finalPos.X][finalPos.Y] = new Prisoner(color);
+        int endTile = walk.Last();
+        pPlacements[color] = endTile;
+        board[endTile] = new Prisoner(color);
 
         return walk;
+    }
+
+    private static IEnumerable<int> Adjacent(int tile)
+    {
+        int size = GameConfig.xDim * GameConfig.yDim;
+        int width = GameConfig.xDim;
+        int xCoord = tile % width;
+
+        if (tile >= width) yield return tile - width;       // up
+        if (tile < size - width) yield return tile + width; // down
+        if (xCoord > 0) yield return tile - 1;              // left
+        if (xCoord < width - 1) yield return tile + 1;      // right
     }
 }
 
