@@ -19,7 +19,11 @@ export const SPIN_RESULT_SCHEMA = z.object({
         symbols.forEach(s => reel.pushBack(s));
         return reel;
     }),
-    prisonerWalks: z.array(z.array(POSITION_SCHEMA)),
+    prisonerWalks: z.array(z.array(z.number())).transform(walks => {
+        const walkQueue = new Queue<number[]>();
+        walks.forEach(walk => walkQueue.pushBack(walk));
+        return walkQueue;
+    }),
 });
 
 export const BOARD_WIDTH = 6;
