@@ -17,7 +17,7 @@ export async function spin(sprites: Container, qc: QueryClient) {
     while (!spinResult.symbolReel.isEmpty()) {
         // Fill board
         board.forEach((symbol, i) => {
-            if (symbol == "empty") board[i] = spinResult.symbolReel.popFront()!;
+            if (symbol === "empty") board[i] = spinResult.symbolReel.popFront()!;
         });
 
         await drawBoard(sprites, board, ms);
@@ -46,8 +46,11 @@ export async function spin(sprites: Container, qc: QueryClient) {
 
         // Push symbols down
         for (var tile = board.length - BOARD_WIDTH - 1; tile >= 0; tile--) {
-            const downTile = tile + BOARD_WIDTH;
-            if (board[downTile] != "empty") continue;
+            var downTile = tile;
+            while ((downTile += BOARD_WIDTH) < board.length && board[downTile] === "empty") { }
+            downTile -= BOARD_WIDTH; // We have overshot by 1
+
+            if (downTile === tile) continue;
 
             board[downTile] = board[tile];
             board[tile] = "empty";

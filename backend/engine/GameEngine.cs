@@ -26,7 +26,7 @@ public class GameEngine
             // Fill missing diamonds
             for (int tile = 0; tile < board.Length; tile++)
             {
-                if (board[tile] != Empty.Instance) continue;
+                if (board[tile] is not Empty) continue;
 
                 Diamond symbol = new(colors[random.Next(colors.Length)], 1);
                 board[tile] = symbol;
@@ -64,8 +64,11 @@ public class GameEngine
             // Push all symbols down
             for (int tile = board.Length - GameConfig.xDim - 1; tile >= 0; tile--) // Skip last row
             {
-                int downTile = tile + GameConfig.xDim;
-                if (board[downTile] != Empty.Instance) continue;
+                int downTile = tile;
+                while ((downTile += GameConfig.xDim) < board.Length && board[downTile] is Empty) { }
+                downTile -= GameConfig.xDim; // We have overshot by 1 row
+
+                if (downTile == tile) continue;
                 if (board[tile] is Prisoner p) pPlacements[p.Color] = downTile;
 
                 board[downTile] = board[tile];
@@ -99,10 +102,11 @@ public class GameEngine
                 {
                     walk.Add(adj);
                     queue.Enqueue(adj);
-                    board[curTile] = Empty.Instance;
                 }
             }
         }
+
+        foreach (int tile in walk) board[tile] = Empty.Instance;
 
         int endTile = walk.Last();
         pPlacements[color] = endTile;
