@@ -8,11 +8,6 @@ export const ALL_SYMBOLS = [...PRISONERS, "empty", "d_green", "d_blue", "d_red",
 
 export const SLOT_SYMBOL_SCHEMA = z.enum(ALL_SYMBOLS);
 
-export const POSITION_SCHEMA = z.object({
-    x: z.number(),
-    y: z.number(),
-});
-
 export const SPIN_RESULT_SCHEMA = z.object({
     symbolReel: z.array(SLOT_SYMBOL_SCHEMA).transform(symbols => {
         const reel = new Queue<SlotSymbol>();

@@ -2,7 +2,6 @@ namespace backend.engine;
 
 using backend.engine.domain;
 using backend.engine.config;
-using Microsoft.AspNetCore.DataProtection.Repositories;
 
 public class GameEngine
 {
@@ -50,7 +49,6 @@ public class GameEngine
             }
 
             symbolReel.AddRange(boardChanges.Values);
-            Console.WriteLine($"first: {board[0]} last: {board[board.Length - 1]}");
 
             // Walk prisoners
             pMoved = false;
