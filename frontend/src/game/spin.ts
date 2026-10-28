@@ -14,20 +14,16 @@ export async function spin(sprites: Container, qc: QueryClient) {
     const board: SlotSymbol[] = new Array(BOARD_WIDTH * BOARD_HEIGHT).fill("empty");
     const ms = 700;
 
-    while (!spinResult.prisonerWalks.isEmpty()) {
+    while (!spinResult.symbolReel.isEmpty()) {
         // Fill board
-        for (var i = 0; i < board.length; i++) {
-            if (board[i] == "empty") board[i] = spinResult.symbolReel.popFront()!;
-        }
-
-        // Draw board
         board.forEach((symbol, i) => {
-            getSpriteAt(sprites, i).texture = getSymbolTexture(symbol);
+            if (symbol == "empty") board[i] = spinResult.symbolReel.popFront()!;
         });
-        await sleep(ms);
+
+        await drawBoard(sprites, board, ms);
 
         // Walk prisoners
-        for (var i = 0; i < PRISONERS.length; i++) {
+        for (const _ of PRISONERS) {
             const walk = spinResult.prisonerWalks.popFront()!;
             const prisoner = board[walk[0]];
 
@@ -48,8 +44,24 @@ export async function spin(sprites: Container, qc: QueryClient) {
         }
         await sleep(ms);
 
+        // Push symbols down
+        for (var tile = board.length - BOARD_WIDTH - 1; tile >= 0; tile--) {
+            const downTile = tile + BOARD_WIDTH;
+            if (board[downTile] != "empty") continue;
 
+            board[downTile] = board[tile];
+            board[tile] = "empty";
+        }
+
+        await drawBoard(sprites, board, ms);
     }
+}
+
+async function drawBoard(sprites: Container, board: SlotSymbol[], ms: number) {
+    board.forEach((symbol, i) => {
+        getSpriteAt(sprites, i).texture = getSymbolTexture(symbol);
+    });
+    await sleep(ms);
 }
 
 function getSpriteAt(sprites: Container, idx: number): Sprite {
