@@ -81,15 +81,15 @@ public class GameEngine
     private static List<int> WalkPrisoner(Symbol[] board, Color color, Dictionary<Color, int> pPlacements)
     {
         List<int> walk = []; // Could maintain a parallel HashSet for O(1) lookups
-        Queue<int> queue = [];
+        Stack<int> stack = [];
 
         int start = pPlacements[color];
         walk.Add(start);
-        queue.Enqueue(start);
+        stack.Push(start);
 
-        while (queue.Count != 0)
+        while (stack.Count != 0)
         {
-            int curTile = queue.Dequeue();
+            int curTile = stack.Pop();
             int[] adjacentTiles = [.. Adjacent(curTile)];
 
             foreach (int adj in adjacentTiles)
@@ -99,7 +99,7 @@ public class GameEngine
                     && !walk.Contains(adj)) // O(n) lookup, but n is small
                 {
                     walk.Add(adj);
-                    queue.Enqueue(adj);
+                    stack.Push(adj);
                 }
             }
         }
