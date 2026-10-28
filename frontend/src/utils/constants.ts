@@ -8,14 +8,19 @@ export const ALL_SYMBOLS = [...PRISONERS, "empty", "d_green", "d_blue", "d_red",
 
 export const SLOT_SYMBOL_SCHEMA = z.enum(ALL_SYMBOLS);
 
+export const STEP_SCHEMA = z.object({
+    tile: z.number().int(),
+    payout: z.number(),
+});
+
 export const SPIN_RESULT_SCHEMA = z.object({
     symbolReel: z.array(SLOT_SYMBOL_SCHEMA).transform(symbols => {
         const reel = new Queue<SlotSymbol>();
         symbols.forEach(s => reel.pushBack(s));
         return reel;
     }),
-    prisonerWalks: z.array(z.array(z.number())).transform(walks => {
-        const walkQueue = new Queue<number[]>();
+    prisonerWalks: z.array(z.array(STEP_SCHEMA)).transform(walks => {
+        const walkQueue = new Queue<z.infer<typeof STEP_SCHEMA>[]>();
         walks.forEach(walk => walkQueue.pushBack(walk));
         return walkQueue;
     }),
