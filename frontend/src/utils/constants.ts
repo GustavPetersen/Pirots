@@ -1,6 +1,6 @@
 import * as z from "zod";
 import { Texture } from "pixi.js";
-import type { SlotSymbol } from "./types";
+import type { PrisonerStep, SlotSymbol } from "./types";
 import { Queue } from "./queue";
 
 export const PRISONERS = ["p_green", "p_blue", "p_red", "p_orange"] as const;
@@ -20,7 +20,7 @@ export const SPIN_RESULT_SCHEMA = z.object({
         return reel;
     }),
     prisonerWalks: z.array(z.array(STEP_SCHEMA)).transform(walks => {
-        const walkQueue = new Queue<z.infer<typeof STEP_SCHEMA>[]>();
+        const walkQueue = new Queue<PrisonerStep[]>();
         walks.forEach(walk => walkQueue.pushBack(walk));
         return walkQueue;
     }),

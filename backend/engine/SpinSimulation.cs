@@ -6,7 +6,7 @@ using backend.engine.config;
 /// <summary>
 /// Holds the running state of a single spin. Create a new instance per spin.
 /// </summary>
-internal sealed class SpinSimulation
+public class SpinSimulation
 {
     private static readonly Color[] colors = Enum.GetValues<Color>();
     private readonly int bet;
