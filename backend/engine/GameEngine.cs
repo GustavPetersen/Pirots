@@ -13,14 +13,14 @@ public class GameEngine
 
         Color[] colors = Enum.GetValues<Color>();
         Dictionary<Color, int> pPlacements = [];
-        List<List<int>> pWalks = [];
+        List<List<Step>> pWalks = [];
         List<Symbol> symbolReel = [];
 
         // Simulate board until no prisoner can walk anymore
         bool pMoved;
         do
         {
-            Dictionary<int, Symbol> boardChanges = [];
+            Dictionary<int, Symbol> boardChanges = []; // tile -> updated symbol
 
             // Fill missing diamonds
             for (int tile = 0; tile < board.Length; tile++)
@@ -54,7 +54,7 @@ public class GameEngine
             pMoved = false;
             foreach (Color color in colors)
             {
-                List<int> walk = WalkPrisoner(board, color, pPlacements);
+                List<Step> walk = WalkPrisoner(board, color, pPlacements, bet);
                 pWalks.Add(walk);
                 pMoved |= walk.Count > 1; // walk always contains starting position
             }
@@ -78,13 +78,18 @@ public class GameEngine
         return new SpinResult(symbolReel, pWalks);
     }
 
-    private static List<int> WalkPrisoner(Symbol[] board, Color color, Dictionary<Color, int> pPlacements)
+    private static List<Step> WalkPrisoner( // this signature is akward
+        Symbol[] board, Color color, Dictionary<Color, int> pPlacements, int bet
+    )
     {
-        List<int> walk = []; // Could maintain a parallel HashSet for O(1) lookups
+        List<double> payouts = [];
+        List<Step> walk = []; // Could maintain a parallel HashSet for O(1) lookups
         Stack<int> stack = [];
 
         int start = pPlacements[color];
-        walk.Add(start);
+        double baseMulti = GameConfig.colorBaseMultiplier[color];
+
+        walk.Add(new(start, 0));
         stack.Push(start);
 
         while (stack.Count != 0)
@@ -92,21 +97,25 @@ public class GameEngine
             int curTile = stack.Pop();
             int[] adjacentTiles = [.. Adjacent(curTile)];
 
-            foreach (int adj in adjacentTiles)
+            foreach (int adjTile in adjacentTiles)
             {
-                if (board[adj] is Diamond d
+                if (board[adjTile] is Diamond d
                     && d.Color == color
-                    && !walk.Contains(adj)) // O(n) lookup, but n is small
+                    && !walk.Any(step => step.Tile == adjTile)) // O(n) lookup, but n is small
                 {
-                    walk.Add(adj);
-                    stack.Push(adj);
+                    double effectiveMulti = baseMulti * d.Level;
+                    double payout = effectiveMulti * bet;
+                    Step step = new(adjTile, payout);
+
+                    walk.Add(step);
+                    stack.Push(adjTile);
                 }
             }
         }
 
-        foreach (int tile in walk) board[tile] = Empty.Instance;
+        foreach (Step step in walk) board[step.Tile] = Empty.Instance;
 
-        int endTile = walk.Last();
+        int endTile = walk.Last().Tile;
         pPlacements[color] = endTile;
         board[endTile] = new Prisoner(color);
 

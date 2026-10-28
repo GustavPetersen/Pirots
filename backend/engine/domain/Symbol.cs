@@ -19,10 +19,10 @@ public sealed record Empty : Symbol
     }
 }
 
-public record Diamond(Color Color, double Multiplier) : Symbol
+public record Diamond(Color Color, double Level) : Symbol
 {
     public Color Color { get; set; } = Color;
-    public double Multiplier { get; set; } = Multiplier;
+    public double Level { get; set; } = Level;
     public override string Name
     {
         get => $"d_{GameConfig.colorString[Color]}";
