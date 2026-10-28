@@ -11,8 +11,8 @@ export async function spin(sprites: Container, qc: QueryClient) {
         queryFn: getSpin(6, 60),
     });
 
-    const board: SlotSymbol[] = new Array(BOARD_WIDTH * BOARD_HEIGHT).fill("empty");
     const ms = 700;
+    const board: SlotSymbol[] = new Array(BOARD_WIDTH * BOARD_HEIGHT).fill("empty");
 
     while (!spinResult.symbolReel.isEmpty()) {
         // Fill board
@@ -23,21 +23,22 @@ export async function spin(sprites: Container, qc: QueryClient) {
         await drawBoard(sprites, board, ms);
 
         // Walk prisoners
-        for (const _ of PRISONERS) {
+        for (var _ = 0; _ < PRISONERS.length; _++) {
             const walk = spinResult.prisonerWalks.popFront()!;
-            const prisoner = board[walk[0]];
+            const startTile = walk[0].tile;
+            const pSymbol = board[startTile];
 
-            const prisonerTexture = getSymbolTexture(prisoner);
+            const pTexture = getSymbolTexture(pSymbol);
             const emptyTexture = getSymbolTexture("empty");
 
             for (var i = 1; i < walk.length; i++) {
-                const prev = walk[i - 1];
-                const current = walk[i];
+                const prevStep = walk[i - 1];
+                const curStep = walk[i];
 
-                getSpriteAt(sprites, prev).texture = emptyTexture;
-                board[prev] = "empty";
-                getSpriteAt(sprites, current).texture = prisonerTexture;
-                board[current] = prisoner;
+                getSpriteAt(sprites, prevStep.tile).texture = emptyTexture;
+                board[prevStep.tile] = "empty";
+                getSpriteAt(sprites, curStep.tile).texture = pTexture;
+                board[curStep.tile] = pSymbol;
 
                 await sleep(ms);
             }
