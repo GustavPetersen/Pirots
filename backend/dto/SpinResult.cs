@@ -1,7 +1,7 @@
 using backend.engine.domain;
 
-public record SpinResult(Symbol[][] InitialBoard, List<List<Position>> PrisonerMovements)
+public record SpinResult(List<Symbol> SymbolReel, List<List<int>> PrisonerWalks)
 {
-    public Symbol[][] InitialBoard { get; set; } = InitialBoard;
-    public List<List<Position>> PrisonerMovements { get; set; } = PrisonerMovements;
+    public List<Symbol> SymbolReel { get; set; } = SymbolReel;
+    public List<List<int>> PrisonerWalks { get; set; } = PrisonerWalks;
 }

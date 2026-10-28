@@ -8,8 +8,10 @@ public abstract record Symbol
 
 }
 
-public record Empty : Symbol
+public sealed record Empty : Symbol
 {
+    private Empty() { }
+    public static readonly Empty Instance = new();
     public override string Name
     {
         get => "empty";

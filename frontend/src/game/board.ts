@@ -87,7 +87,7 @@ export default async function createBoard(container: HTMLElement): Promise<Appli
             tileBg.label = 'tile_bg';
 
             const tile = new Container();
-            tile.position.set(tileSize * i, tileSize * j);
+            tile.position.set(tileSize * j, tileSize * i);
             tile.addChild(tileBg);
             subContainer.addChild(tile);
         }
