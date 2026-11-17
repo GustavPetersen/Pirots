@@ -1,5 +1,7 @@
 using backend.engine.domain;
 
+namespace backend.dto;
+
 public record SpinResult(List<Symbol> SymbolReel, List<List<Step>> PrisonerWalks)
 {
     public List<Symbol> SymbolReel { get; set; } = SymbolReel;

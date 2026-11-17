@@ -2,6 +2,7 @@ namespace backend.engine;
 
 using backend.engine.domain;
 using backend.engine.config;
+using backend.dto;
 
 /// <summary>
 /// Holds the running state of a single spin. Create a new instance per spin.

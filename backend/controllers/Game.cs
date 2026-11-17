@@ -2,19 +2,20 @@ namespace backend.controllers;
 
 using Microsoft.AspNetCore.Mvc;
 using backend.engine;
+using backend.dto;
 
 /// <summary>
 /// Controller for backend API
 /// </summary>
 [ApiController]
-[Route("api")]
+[Route("game")]
 [Produces("application/json")]
-public class BackendController : ControllerBase
+public class GameController : ControllerBase
 {
     /// <summary>
     /// Constructor deluxe
     /// </summary>
-    public BackendController()
+    public GameController()
     {
     }
 

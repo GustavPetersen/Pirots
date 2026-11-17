@@ -5,8 +5,8 @@ using Microsoft.EntityFrameworkCore;
 namespace backend.data;
 
 /// <summary>
-/// The application's single EF Core context: Identity tables, Data Protection keys,
-/// and (later) the app's own tables.
+/// Our EF Core dbcontext. Currently contains Identity tables and Data Protection keys.
+/// Will later hold the rest of the app's data such as wallets, stats, etc. 
 /// </summary>
 public class AppDbContext(DbContextOptions<AppDbContext> options)
     : IdentityDbContext<AppUser>(options), IDataProtectionKeyContext
