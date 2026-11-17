@@ -11,6 +11,8 @@ services:
     build:
       context: ./backend
       target: production
+    environment:
+      ConnectionStrings__Default: ${ConnectionStrings__Default}
     restart: unless-stopped
     networks: [default, dokploy-network]
 

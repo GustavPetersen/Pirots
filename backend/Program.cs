@@ -1,16 +1,50 @@
 using System.Reflection;
 using Microsoft.OpenApi;
 using backend.converters;
+using backend.data;
+using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseNpgsql(builder.Configuration.GetConnectionString("Default")));
+
+builder.Services.AddIdentity<AppUser, IdentityRole>(options =>
+    {
+        options.User.RequireUniqueEmail = true;
+        options.Lockout.MaxFailedAccessAttempts = 5;
+        options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
+    })
+    .AddEntityFrameworkStores<AppDbContext>()
+    .AddDefaultTokenProviders();
+
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.Cookie.HttpOnly = true;
+    options.Cookie.SameSite = SameSiteMode.Lax;
+    options.SlidingExpiration = true;
+    options.ExpireTimeSpan = TimeSpan.FromDays(7);
+
+    // Allow dev builds to return cookies through plain http
+    if (builder.Environment.IsDevelopment())
+        options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
+    else
+        options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+});
+
+// Persist cookie-encryption keys in database so they persist across container rebuilds.
+builder.Services.AddDataProtection().PersistKeysToDbContext<AppDbContext>();
 
 builder.Services.AddControllers().AddJsonOptions(options =>
 {
     options.JsonSerializerOptions.Converters.Add(new SymbolJsonConverter());
 });
+
 builder.Services.AddCors(options => // TODO: Actually consider proper COORS policy
 {
-    options.AddPolicy("AllowAll", policy =>
+    options.AddPolicy("CustomCorsPolicy", policy =>
     {
         policy
             .AllowAnyOrigin()
@@ -37,6 +71,14 @@ builder.Services.AddSwaggerGen(options =>
 
 var app = builder.Build();
 
+// Apply pending EF Core migrations at startup
+using (var scope = app.Services.CreateScope())
+{
+    await scope.ServiceProvider.GetRequiredService<AppDbContext>().Database.MigrateAsync();
+}
+
+app.UseForwardedHeaders();
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger(options =>
@@ -50,7 +92,10 @@ if (app.Environment.IsDevelopment())
     });
 }
 
-app.UseCors("AllowAll");
+app.UseCors("CustomCorsPolicy");
+
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapControllers();
 
