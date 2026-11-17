@@ -44,6 +44,19 @@ public class AuthController : ControllerBase
     /// <summary>
     /// ...
     /// </summary>
+    /// <returns> ... </returns>
+    [Authorize]
+    [HttpPost]
+    [Route("logout")]
+    public async Task<IActionResult> Logout()
+    {
+        await _signInManager.SignOutAsync();
+        return Ok();
+    }
+
+    /// <summary>
+    /// ...
+    /// </summary>
     /// <param name="req"> ... </param>
     /// <returns> ... </returns>
     [HttpPost]
@@ -74,7 +87,7 @@ public class AuthController : ControllerBase
     /// </summary>
     /// <returns> ... </returns>
     [Authorize]
-    [HttpPost]
+    [HttpGet]
     [Route("me")]
     public async Task<IActionResult> Me()
     {
