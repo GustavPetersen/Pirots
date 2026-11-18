@@ -1,8 +1,12 @@
 :80 {
 	encode gzip zstd
 
-	handle /api/* {
-		reverse_proxy api:3000
+	handle /auth/* {
+		reverse_proxy api:8080
+	}
+
+	handle /game/* {
+		reverse_proxy api:8080
 	}
 
 	handle {

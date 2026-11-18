@@ -14,9 +14,3 @@ CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0"]
 FROM base AS build
 COPY . .
 RUN npm run build
-
-# Production serve
-FROM caddy:2-alpine AS production
-COPY Caddyfile /etc/caddy/Caddyfile
-COPY --from=build /app/dist /srv
-EXPOSE 80
