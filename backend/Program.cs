@@ -46,9 +46,10 @@ builder.Services.AddCors(options => // TODO: Actually consider proper COORS poli
     options.AddPolicy("CustomCorsPolicy", policy =>
     {
         policy
-            .AllowAnyOrigin()
+            .WithOrigins("http://localhost:5173")
             .AllowAnyHeader()
-            .AllowAnyMethod();
+            .AllowAnyMethod()
+            .AllowCredentials();
     });
 });
 
@@ -87,7 +88,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI(options =>
     {
         options.SwaggerEndpoint("/swagger/v1/swagger.json", "GoofyAhh API v1");
-        options.RoutePrefix = "api";
+        options.RoutePrefix = "";
     });
 }
 

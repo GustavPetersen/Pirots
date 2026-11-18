@@ -6,7 +6,7 @@ using backend.dtos;
 using Microsoft.AspNetCore.Authorization;
 
 /// <summary>
-/// Controller for backend API
+/// Controller for game requests
 /// </summary>
 [ApiController]
 [Route("game")]

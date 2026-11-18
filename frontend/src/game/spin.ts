@@ -1,7 +1,7 @@
 import { QueryClient } from '@tanstack/react-query';
 import { type SpinResult, type SlotSymbol, } from '../utils/types';
 import { Container, Sprite, } from 'pixi.js';
-import { getSpin } from '../api/queries';
+import { getSpin } from '../api/game';
 import { BOARD_WIDTH, BOARD_HEIGHT, sleep, getSymbolTexture, PRISONERS, } from '../utils/constants';
 
 export async function spin(sprites: Container, qc: QueryClient) {

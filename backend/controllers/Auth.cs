@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Identity;
 using backend.data;
 
 /// <summary>
-/// Controller for backend API
+/// Controller for auth requests
 /// </summary>
 [ApiController]
 [Route("auth")]
