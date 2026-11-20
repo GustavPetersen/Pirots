@@ -1,11 +1,12 @@
 import { QueryClient } from '@tanstack/react-query';
 import { type SpinResult, type SlotSymbol, } from '../utils/types';
-import { Container, Sprite, } from 'pixi.js';
+import { Container, Sprite, Text } from 'pixi.js';
 import { getSpin } from '../api/game';
 import { BOARD_WIDTH, BOARD_HEIGHT, sleep, getSymbolTexture, PRISONERS, } from '../utils/constants';
 
-export async function spin(sprites: Container, qc: QueryClient) {
+export async function spin(sprites: Container, qc: QueryClient, payoutLabel: Text) {
 
+    payoutLabel.text = "Payout: 0";
     let spinResult: SpinResult = null!;
     try {
         spinResult = await qc.query({
@@ -16,7 +17,6 @@ export async function spin(sprites: Container, qc: QueryClient) {
         alert(error);
         return;
     }
-
 
     const ms = 700;
     const board: SlotSymbol[] = new Array(BOARD_WIDTH * BOARD_HEIGHT).fill("empty");
@@ -47,6 +47,9 @@ export async function spin(sprites: Container, qc: QueryClient) {
                 getSpriteAt(sprites, curStep.tile).texture = pTexture;
                 board[curStep.tile] = pSymbol;
 
+                const currentText = payoutLabel.text;
+                const payoutAmount = Number(currentText.split(" ")[1]) + curStep.payout;
+                payoutLabel.text = "Payout: " + payoutAmount.toFixed(1);
                 await sleep(ms);
             }
         }

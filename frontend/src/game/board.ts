@@ -1,5 +1,5 @@
 import { QueryClient } from '@tanstack/react-query';
-import { Application, Container, Sprite, Assets, Texture } from 'pixi.js';
+import { Application, Container, Sprite, Assets, Texture, Text } from 'pixi.js';
 import { Howl } from 'howler';
 import { spin } from './spin';
 
@@ -130,6 +130,43 @@ export default async function createBoard(container: HTMLElement): Promise<Appli
         background.height / 2
     );
 
+    // create payout and bet label
+    const betAmount = 5;
+    const betLabel = new Text({
+        text: 'Bet: ' + betAmount,
+        style: {
+            fontFamily: 'Arial, Helvetica, sans-serif',
+            fontSize: 28,
+            fontWeight: 'bold',
+            fill: 0xffffff,
+            letterSpacing: 1,
+        },
+    });
+    betLabel.position.set(
+        spinButton.position.x,
+        spinButton.position.y + background.height * 0.25
+    );
+    betLabel.anchor.set(0.5)
+
+    // create payout and bet label
+    const payoutLabel = new Text({
+        text: '',
+        style: {
+            fontFamily: 'Arial, Helvetica, sans-serif',
+            fontSize: 28,
+            fontWeight: 'bold',
+            fill: 0xffffff,
+            letterSpacing: 1,
+        },
+    });
+    payoutLabel.position.set(
+        betLabel.position.x,
+        betLabel.position.y + background.height * 0.05
+    );
+    payoutLabel.anchor.set(0.5)
+    payoutLabel.label = 'payoutLabel';
+
+
     // Setup api call on button click
     const jackpotSound = new Howl({ src: ['Assets/Sounds/JACKPOT.mp3'] });
     const queryClient = new QueryClient();
@@ -138,10 +175,14 @@ export default async function createBoard(container: HTMLElement): Promise<Appli
     spinButton.cursor = 'pointer';
     spinButton.on('pointerdown', async () => {
         jackpotSound.play();
-        await spin(middleTiles, queryClient);
+        await spin(middleTiles, queryClient, payoutLabel);
     });
 
+
+
     app.stage.addChild(spinButton);
+    app.stage.addChild(betLabel);
+    app.stage.addChild(payoutLabel);
     //spin(middleTiles, queryClient); // Spin the initail diamonds when loading the page
 
     return app;
