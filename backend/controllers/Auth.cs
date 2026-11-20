@@ -98,6 +98,7 @@ public class AuthController : ControllerBase
             return Unauthorized();
         }
 
-        return Ok(curUser.UserName);
+        MeResult result = new(curUser.UserName!, curUser.Wallet.Amount);
+        return Ok(result);
     }
 }

@@ -4,6 +4,10 @@ using Microsoft.AspNetCore.Mvc;
 using backend.engine;
 using backend.dtos;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using backend.data;
+using System.Data.Common;
+using Microsoft.EntityFrameworkCore;
 
 /// <summary>
 /// Controller for game requests
@@ -13,11 +17,16 @@ using Microsoft.AspNetCore.Authorization;
 [Produces("application/json")]
 public class GameController : ControllerBase
 {
+    private readonly UserManager<AppUser> _userManager;
+    private readonly SignInManager<AppUser> _signInManager;
     /// <summary>
     /// Constructor deluxe
     /// </summary>
-    public GameController()
+    /// 
+    public GameController(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager)
     {
+        _userManager = userManager;
+        _signInManager = signInManager;
     }
 
     /// <summary>
@@ -30,15 +39,21 @@ public class GameController : ControllerBase
     [Authorize]
     [HttpGet]
     [Route("spin")]
-    public async Task<IActionResult> SpinReel(int bet, int idempotencyKey)
+    public async Task<IActionResult> SpinReel(int bet, int idempotencyKey )
     {
-        SpinResult result = GameEngine.Spin(bet);
         // TODO: DO NOT RUN SPIN WITH SAME KEY
-        // TODO: Load Player Wallet
-        // TODO: If balance < bet -> Reject bet
-        // TODO: set balance = balance - bet
-        // TODO: Result = GameEngine.Spin(bet)
-        // TODO: Return result
+        AppUser? curUser = await _userManager.GetUserAsync(User);
+        if (curUser is null)
+        {
+            await _signInManager.SignOutAsync();
+            return Unauthorized();
+        }
+        if (curUser.Wallet.Amount - bet < 0)
+        {
+            return Forbid();
+        }
+        curUser.Wallet.Amount -= bet;
+        SpinResult result = GameEngine.Spin(bet);
         return Ok(result);
     }
 }

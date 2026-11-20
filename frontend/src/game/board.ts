@@ -5,6 +5,7 @@ import { spin } from './spin';
 
 export default async function createBoard(container: HTMLElement): Promise<Application> {
     const app = new Application();
+    let isSpinning = false;
     await app.init({ backgroundColor: 0x000000, resizeTo: window });
     container.appendChild(app.canvas);
 
@@ -174,8 +175,15 @@ export default async function createBoard(container: HTMLElement): Promise<Appli
     spinButton.eventMode = 'static';
     spinButton.cursor = 'pointer';
     spinButton.on('pointerdown', async () => {
+        if (isSpinning) {
+            return;
+        }
+        spinButton.alpha = 0.6;
+        isSpinning = true
         jackpotSound.play();
         await spin(middleTiles, queryClient, payoutLabel);
+        isSpinning = false
+        spinButton.alpha = 1.0;
     });
 
 

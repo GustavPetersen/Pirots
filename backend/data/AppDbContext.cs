@@ -13,5 +13,17 @@ public class AppDbContext(DbContextOptions<AppDbContext> options)
 {
     public DbSet<DataProtectionKey> DataProtectionKeys => Set<DataProtectionKey>();
 
-    // Future: public DbSet<Wallet> Wallets => Set<Wallet>();
+    public DbSet<Wallet> Wallets => Set<Wallet>();
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        base.OnModelCreating(modelBuilder); 
+
+        modelBuilder.Entity<AppUser>()
+            .HasOne(e => e.Wallet)
+            .WithOne(e => e.User)
+            .HasForeignKey<Wallet>(e => e.UserId)
+            .IsRequired();
+    }
 }
+

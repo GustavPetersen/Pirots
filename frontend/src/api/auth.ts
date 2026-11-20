@@ -1,3 +1,6 @@
+import type { UserData } from "../utils/types";
+import { USER_DATA } from "../utils/constants";
+
 const baseUrl = import.meta.env.VITE_API_URL ?? "/";
 
 async function authRequest(url: string, method: string, body?: unknown): Promise<Response> {
@@ -25,7 +28,7 @@ export async function logout(): Promise<void> {
     await authRequest("/auth/logout", "POST");
 }
 
-export async function getMe(): Promise<string | null> {
+export async function getMe(): Promise<UserData | null> {
     try {
         const response = await authRequest("/auth/me", "GET");
         return await response.json();

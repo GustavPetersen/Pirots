@@ -13,6 +13,11 @@ export const STEP_SCHEMA = z.object({
     payout: z.number(),
 });
 
+export const USER_DATA = z.object({
+    userName: z.string(),
+    balance: z.number(),
+})
+
 export const SPIN_RESULT_SCHEMA = z.object({
     symbolReel: z.array(SLOT_SYMBOL_SCHEMA).transform(symbols => {
         const reel = new Queue<SlotSymbol>();
