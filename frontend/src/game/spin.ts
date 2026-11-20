@@ -6,10 +6,17 @@ import { BOARD_WIDTH, BOARD_HEIGHT, sleep, getSymbolTexture, PRISONERS, } from '
 
 export async function spin(sprites: Container, qc: QueryClient) {
 
-    const spinResult: SpinResult = await qc.query({
+    let spinResult: SpinResult = null!;
+    try {
+        spinResult = await qc.query({
         queryKey: ["getSpin"],
         queryFn: getSpin(6, 60),
     });
+    } catch (error) {
+        alert(error);
+        return;
+    }
+
 
     const ms = 700;
     const board: SlotSymbol[] = new Array(BOARD_WIDTH * BOARD_HEIGHT).fill("empty");
