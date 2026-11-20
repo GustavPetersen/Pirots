@@ -1,19 +1,46 @@
 services:
-  web:
-    build:
-      context: ./frontend
-      target: production
-    depends_on: [api]
-    restart: unless-stopped
-    networks: [default, dokploy-network]
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB_NAME} 
+    network: dokploy-network
+    volumes:
+      - pg_volume:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB_NAME}"]
+      interval: 5s
 
   api:
     build:
       context: ./backend
       target: production
+    environment:
+      ConnectionStrings__Default: Host=db;Port=5432;Database=${POSTGRES_DB_NAME};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}
+    depends_on: db
     restart: unless-stopped
-    networks: [default, dokploy-network]
+    network: dokploy-network
+
+  web:
+    build:
+      context: ./frontend
+      target: production
+    depends_on: api
+    restart: unless-stopped
+    network: dokploy-network
+
+  caddy:
+    image: caddy:latest
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
 
 networks:
   dokploy-network:
     external: true
+
+volumes:
+  pg_volume:

@@ -2,10 +2,14 @@ import * as z from "zod";
 import type { SpinResult } from "../utils/types";
 import { SPIN_RESULT_SCHEMA } from "../utils/constants";
 
-async function apiRequest<T>(url: string, schema: z.ZodType<T>): Promise<T> {
-    const baseUrl = import.meta.env.VITE_API_URL ?? "/api";
+const baseUrl = import.meta.env.VITE_API_URL ?? "/";
 
-    const response = await fetch(`${baseUrl}${url}`);
+async function apiRequest<T>(url: string, schema: z.ZodType<T>): Promise<T> {
+
+    const response = await fetch(`${baseUrl}${url}`, {
+        method: "GET",
+        credentials: "include",
+    });
     if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
     }
@@ -21,6 +25,6 @@ export function getSpin(bet: number, idempotencyKey: number): () => Promise<Spin
         };
 
         const queryString = new URLSearchParams(params).toString();
-        return await apiRequest<SpinResult>(`/spin?${queryString}`, SPIN_RESULT_SCHEMA);
+        return await apiRequest<SpinResult>(`/game/spin?${queryString}`, SPIN_RESULT_SCHEMA);
     }
 }

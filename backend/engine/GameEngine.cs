@@ -1,3 +1,5 @@
+using backend.dtos;
+
 namespace backend.engine;
 
 public static class GameEngine

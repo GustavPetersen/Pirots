@@ -2,19 +2,21 @@ namespace backend.controllers;
 
 using Microsoft.AspNetCore.Mvc;
 using backend.engine;
+using backend.dtos;
+using Microsoft.AspNetCore.Authorization;
 
 /// <summary>
-/// Controller for backend API
+/// Controller for game requests
 /// </summary>
 [ApiController]
-[Route("api")]
+[Route("game")]
 [Produces("application/json")]
-public class BackendController : ControllerBase
+public class GameController : ControllerBase
 {
     /// <summary>
     /// Constructor deluxe
     /// </summary>
-    public BackendController()
+    public GameController()
     {
     }
 
@@ -25,6 +27,7 @@ public class BackendController : ControllerBase
     /// <param name="bet"> The amount of cash to spin for </param>
     /// <param name="idempotencyKey"> An unique spin identifier to prevent double spins </param>
     /// <returns>Instructions to render the board changes and the final payout (not implemented) </returns>
+    [Authorize]
     [HttpGet]
     [Route("spin")]
     public async Task<IActionResult> SpinReel(int bet, int idempotencyKey)
