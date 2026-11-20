@@ -58,12 +58,12 @@ export default async function createBoard(container: HTMLElement): Promise<Appli
                 texture = Texture.from('tile_corner');
             } else if (i == gridSize - 1 && j == 0) {           // If top right corner
                 texture = Texture.from('tile_corner');
-                rotation = Math.PI / 2;
-                anchorY = 1;
+                rotation = - Math.PI / 2;
+                anchorX = 1;
             } else if (i == 0 && j == gridSize - 1) {           // If bottom left corner
                 texture = Texture.from('tile_corner');
-                rotation = - Math.PI / 2
-                anchorX = 1;
+                rotation =  Math.PI / 2
+                anchorY = 1;
             } else if (i == gridSize - 1 && j == gridSize - 1) {// If bottom right corner
                 texture = Texture.from('tile_corner');
                 rotation = Math.PI;
@@ -71,10 +71,10 @@ export default async function createBoard(container: HTMLElement): Promise<Appli
                 anchorY = 1;
             } else if (i == 0 || i == gridSize - 1) {           // If left or right side
                 texture = Texture.from('tile_straight');
-            } else if (j == 0 || j == gridSize - 1) {           // If top or buttom
-                texture = Texture.from('tile_straight');
                 rotation = Math.PI / 2;
                 anchorY = 1;
+            } else if (j == 0 || j == gridSize - 1) {           // If top or buttom
+                texture = Texture.from('tile_straight');
             }
 
             const tileBg = Sprite.from(texture);
