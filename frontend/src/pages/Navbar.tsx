@@ -4,14 +4,14 @@ import { getMe, logout } from "../api/auth";
 
 function Navbar() {
     const queryClient = useQueryClient();
-    const result = useQuery({ queryKey: ["me"], queryFn: getMe });
+    const result = useQuery({ queryKey: ["getMe"], queryFn: getMe });
 
     const balance: number | null = result.data?.balance ?? null;
     const userName: string | null = result.data?.userName ?? null;
 
     async function handleLogout() {
         await logout();
-        await queryClient.invalidateQueries({ queryKey: ["me"] });
+        await queryClient.invalidateQueries({ queryKey: ["getMe"] });
     }
 
     return (

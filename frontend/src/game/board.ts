@@ -1,14 +1,13 @@
 import { QueryClient } from "@tanstack/react-query";
-import { Application, Container, Sprite, Assets, Texture, Text } from "pixi.js";
+import { Application, Container, Sprite, Assets, Texture } from "pixi.js";
 import { Howl } from "howler";
-import { renderSpin } from "./spin";
+import { renderSpin } from "./renderSpin";
 import { getSpin } from "../api/game";
-import type { SpinResult } from "../utils/types";
 import { createBetLabel, createPayoutLabel } from "./labels";
+import { createSpinButton } from "./spinButton";
 
 export default async function createBoard(container: HTMLElement, queryClient: QueryClient): Promise<Application> {
     const app = new Application();
-    let isSpinning = false;
     await app.init({ backgroundColor: 0x000000, resizeTo: window });
     container.appendChild(app.canvas);
 
@@ -128,45 +127,25 @@ export default async function createBoard(container: HTMLElement, queryClient: Q
     tiles.label = "tiles";
     app.stage.addChild(tiles);
 
-    // Create spin button
-    const spinButton = Sprite.from("spin_button");
-    spinButton.anchor.set(0.5);
-
     const tilesEndX = tiles.x + tiles.width;
-    spinButton.position.set(
+    const spinButton = createSpinButton(
         tilesEndX + (background.width - tilesEndX) / 2,
-        background.height / 2
-    );
+        background.height / 2,
+        async () => {
+            const spinResult = await queryClient
+                .query({ queryKey: ["getSpin"], queryFn: getSpin(5, 67) })
+                .catch((error) => {
+                    alert(error);
+                    return null;
+                });
 
-    // Setup api call on button click
-    spinButton.eventMode = "static";
-    spinButton.cursor = "pointer";
-    spinButton.on("pointerdown", async () => {
-        if (isSpinning) {
-            return;
+            if (!spinResult) return;
+
+            jackpotSound.play();
+            await renderSpin(app.stage, spinResult);
+            await queryClient.invalidateQueries({ queryKey: ["GetMe"] });
         }
-
-        let spinResult: SpinResult = null!;
-        try {
-            spinResult = await queryClient.query({
-                queryKey: ["getSpin"],
-                queryFn: getSpin(5, 67),
-            });
-        } catch (error) {
-            alert(error);
-            return;
-        }
-
-        spinButton.alpha = 0.6;
-        isSpinning = true;
-
-        jackpotSound.play();
-        await renderSpin(app.stage, spinResult);
-        await queryClient.invalidateQueries({ queryKey: ["me"] });
-
-        isSpinning = false;
-        spinButton.alpha = 1.0;
-    });
+    )
 
     const betLabel = createBetLabel(
         spinButton.position.x,

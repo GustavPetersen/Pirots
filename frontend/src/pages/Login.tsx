@@ -16,7 +16,7 @@ function Login() {
         setError(null);
         try {
             await login(userName, password, rememberMe);
-            await queryClient.invalidateQueries({ queryKey: ["me"] });
+            await queryClient.invalidateQueries({ queryKey: ["getMe"] });
             navigate("/");
         } catch {
             setError("Login failed");
