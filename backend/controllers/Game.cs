@@ -58,7 +58,7 @@ public class GameController : ControllerBase
         }
 
         SpinResult result = GameEngine.Spin(bet);
-        float payout = (float)result.PrisonerWalks.SelectMany(walk => walk).Sum(step => step.Payout);
+        decimal payout = result.PrisonerWalks.SelectMany(walk => walk).Sum(step => step.Payout);
 
         wallet.Amount += payout - bet;
         await _dbContext.SaveChangesAsync();

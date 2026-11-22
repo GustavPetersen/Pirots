@@ -1,11 +1,9 @@
-using System.ComponentModel.DataAnnotations;
 using backend.data;
 
 public class Wallet
 {
-    [Key]
     public int Id { get; set; }
     public string UserId { get; set; } = null!;
     public AppUser User { get; set; } = null!;
-    public float Amount { get; set; } = 500;
+    public decimal Amount { get; set; } = 500;
 }
