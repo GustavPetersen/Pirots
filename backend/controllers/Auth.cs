@@ -1,5 +1,6 @@
 namespace backend.controllers;
 
+using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
 using backend.dtos;
 using Microsoft.AspNetCore.Authorization;
@@ -94,14 +95,18 @@ public class AuthController : ControllerBase
     [Route("me")]
     public async Task<IActionResult> Me()
     {
-        AppUser? curUser = await _userManager.GetUserAsync(User);
-        if (curUser is null)
+        string? userId = _userManager.GetUserId(User);
+        MeResult? me = await _dbContext.Users
+            .Where(u => u.Id == userId)
+            .Select(u => new MeResult(u.UserName!, u.Wallet.Amount))
+            .SingleOrDefaultAsync();
+
+        if (me is null)
         {
             await _signInManager.SignOutAsync(); // Invalidate the session
             return Unauthorized();
         }
-        Wallet wallet = _dbContext.Wallets.First(wallet => wallet.UserId == curUser.Id);
-        MeResult result = new(curUser.UserName!,  wallet.Amount);
-        return Ok(result);
+
+        return Ok(me);
     }
 }

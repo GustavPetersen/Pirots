@@ -54,12 +54,12 @@ public class GameController : ControllerBase
 
         if (wallet.Amount - bet < 0)
         {
-            return Forbid();
+            return Conflict();
         }
 
         SpinResult result = GameEngine.Spin(bet);
-        decimal payout = result.PrisonerWalks.SelectMany(walk => walk).Sum(step => step.Payout);
 
+        decimal payout = result.PrisonerWalks.SelectMany(walk => walk).Sum(step => step.Payout);
         wallet.Amount += payout - bet;
         await _dbContext.SaveChangesAsync();
 
