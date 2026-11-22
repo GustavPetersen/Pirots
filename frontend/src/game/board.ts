@@ -34,7 +34,6 @@ export default async function createBoard(container: HTMLElement, queryClient: Q
         { alias: "pirots", src: "pirots_logo_650.png" },
     ]);
 
-    // Create background
     const background = Sprite.from("bg");
     background.setSize(app.screen.width, app.screen.height)
 
@@ -69,11 +68,13 @@ export default async function createBoard(container: HTMLElement, queryClient: Q
         betLabel.position.y + background.height * 0.05,
     )
 
-    app.stage.addChild(background);
-    app.stage.addChild(tiles);
-    app.stage.addChild(spinButton);
-    app.stage.addChild(betLabel);
-    app.stage.addChild(payoutLabel);
+    app.stage.addChild(
+        background,
+        tiles,
+        spinButton,
+        betLabel,
+        payoutLabel
+    );
 
     return app;
 }

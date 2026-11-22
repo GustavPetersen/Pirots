@@ -1,86 +1,67 @@
-import { Container, Sprite, Texture } from "pixi.js";
+import { Container, Sprite } from "pixi.js";
+
+type TileStyle = {
+    texture: string;
+    rotation: number;
+    anchor: [number, number];
+};
+
+// Corner rotations indexed by [isLastRow][isLastCol]
+const CORNER_ROTATIONS = [
+    [0, Math.PI / 2],
+    [-Math.PI / 2, Math.PI],
+];
+
+function getTileStyle(row: number, col: number, last: number): TileStyle {
+    const isEdgeRow = row === 0 || row === last;
+    const isEdgeCol = col === 0 || col === last;
+
+    if (isEdgeRow && isEdgeCol) {
+        const r = Number(row === last);
+        const c = Number(col === last);
+        return { texture: "tile_corner", rotation: CORNER_ROTATIONS[r][c], anchor: [r, c] };
+    }
+    if (isEdgeRow) return { texture: "tile_straight", rotation: Math.PI / 2, anchor: [0, 1] };
+    if (isEdgeCol) return { texture: "tile_straight", rotation: 0, anchor: [0, 0] };
+    return { texture: "tile_mid", rotation: 0, anchor: [0, 0] };
+}
 
 export function createTiles(x: number, y: number, tileSize: number, gridSize: number): Container {
-    const tiles = new Container();
-    const middleTiles = new Container();
-    const edgeTiles = new Container();
+    const tiles = new Container({ label: "tiles" });
+    const middleTiles = new Container({ label: "middleTiles" });
+    const edgeTiles = new Container({ label: "edgeTiles" });
+    const last = gridSize - 1;
 
-    tiles.label = "tiles";
-    middleTiles.label = "middleTiles";
-    edgeTiles.label = "edgeTiles";
-
-    for (var i = 0; i < gridSize; i++) {
-        for (var j = 0; j < gridSize; j++) {
-            var texture = Texture.EMPTY;
-            var subContainer = edgeTiles;
-            var rotation = 0;
-            var anchorX = 0;
-            var anchorY = 0;
-
-            if (i != 0 && i != gridSize - 1 &&                  // If middle tile
-                j != 0 && j != gridSize - 1) {
-                texture = Texture.from("tile_mid");
-                subContainer = middleTiles;
-            } else if (i == 0 && j == 0) {                      // If top left corner
-                texture = Texture.from("tile_corner");
-            } else if (i == gridSize - 1 && j == 0) {           // If top right corner
-                texture = Texture.from("tile_corner");
-                rotation = - Math.PI / 2;
-                anchorX = 1;
-            } else if (i == 0 && j == gridSize - 1) {           // If bottom left corner
-                texture = Texture.from("tile_corner");
-                rotation = Math.PI / 2
-                anchorY = 1;
-            } else if (i == gridSize - 1 && j == gridSize - 1) {// If bottom right corner
-                texture = Texture.from("tile_corner");
-                rotation = Math.PI;
-                anchorX = 1;
-                anchorY = 1;
-            } else if (i == 0 || i == gridSize - 1) {           // If left or right side
-                texture = Texture.from("tile_straight");
-                rotation = Math.PI / 2;
-                anchorY = 1;
-            } else if (j == 0 || j == gridSize - 1) {           // If top or buttom
-                texture = Texture.from("tile_straight");
-            }
-
-            const tileBg = Sprite.from(texture);
-
-            // Rotate corners
-            if (rotation != 0) {
-                tileBg.anchor.set(anchorX, anchorY);
-                tileBg.rotation = rotation;
-            }
-            tileBg.setSize(tileSize);
-            tileBg.label = "tile_bg";
+    for (let row = 0; row < gridSize; row++) {
+        for (let col = 0; col < gridSize; col++) {
+            const { texture, rotation, anchor } = getTileStyle(row, col, last);
+            const isMiddle = texture === "tile_mid";
 
             const tile = new Container();
-            tile.position.set(tileSize * j, tileSize * i);
+            tile.position.set(tileSize * col, tileSize * row);
+
+            const tileBg = Sprite.from(texture);
+            tileBg.label = "tile_bg";
+            tileBg.anchor.set(...anchor);
+            tileBg.rotation = rotation;
+            tileBg.setSize(tileSize);
             tile.addChild(tileBg);
-            subContainer.addChild(tile);
+
+            if (isMiddle) {
+                const tileFg = Sprite.from("empty");
+                tileFg.label = "tile_fg";
+                tileFg.anchor.set(0.5);
+                tileFg.setSize(tileSize * 0.8);
+                tileFg.position.set(tileSize / 2, tileSize / 2);
+                tile.addChild(tileFg);
+            }
+
+            (isMiddle ? middleTiles : edgeTiles).addChild(tile);
         }
     }
 
-    tiles.addChild(middleTiles);
-    tiles.addChild(edgeTiles);
-
-    // Add placeholder foreground sprites for all middle tiles
-    for (var i = 0; i < middleTiles.children.length; i++) {
-        const tile = middleTiles.getChildAt<Container>(i);
-        const tileFg = Sprite.from("empty");
-
-        tileFg.label = "tile_fg";
-        tileFg.setSize(tileSize * 0.8);
-        tileFg.anchor.set(0.5);
-        tileFg.position.set(
-            tile.width / 2,
-            tile.height / 2,
-        );
-
-        tile.addChild(tileFg);
-    }
-
-    tiles.pivot.set((gridSize * tileSize) / 2, (gridSize * tileSize) / 2)
+    tiles.addChild(middleTiles, edgeTiles);
+    tiles.pivot.set((gridSize * tileSize) / 2, (gridSize * tileSize) / 2);
     tiles.position.set(x, y);
 
     return tiles;
