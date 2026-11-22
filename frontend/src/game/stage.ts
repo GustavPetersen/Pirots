@@ -5,7 +5,7 @@ import { renderSpin } from "./renderSpin";
 import { getSpin } from "../api/game";
 import { createBetLabel, createPayoutLabel } from "./labels";
 import { createSpinButton } from "./spinButton";
-import { createBoard } from "./tiles";
+import { createBoard } from "./board";
 
 export default async function createStage(container: HTMLElement, queryClient: QueryClient): Promise<Application> {
     const app = new Application();
@@ -35,13 +35,13 @@ export default async function createStage(container: HTMLElement, queryClient: Q
     ]);
 
     const background = Sprite.from("bg");
-    background.setSize(app.screen.width, app.screen.height)
+    background.setSize(app.screen.width, app.screen.height);
 
-    const tiles = createBoard(background.width / 2, background.height / 2, 90, 8);
-    const tilesEndX = tiles.x + tiles.width / 2;
+    const board = createBoard(background.width / 2, background.height / 2, 90, 8);
+    const boardEndX = board.x + board.width / 2;
 
     const spinButton = createSpinButton(
-        tilesEndX + (background.width - tilesEndX) / 2,
+        boardEndX + (background.width - boardEndX) / 2,
         background.height / 2,
         async () => {
             const spinResult = await queryClient
@@ -57,20 +57,21 @@ export default async function createStage(container: HTMLElement, queryClient: Q
             await renderSpin(app.stage, spinResult);
             await queryClient.invalidateQueries({ queryKey: ["getMe"] });
         }
-    )
+    );
 
     const betLabel = createBetLabel(
         spinButton.position.x,
         spinButton.position.y + background.height * 0.25,
     );
+
     const payoutLabel = createPayoutLabel(
         betLabel.position.x,
         betLabel.position.y + background.height * 0.05,
-    )
+    );
 
     app.stage.addChild(
         background,
-        tiles,
+        board,
         spinButton,
         betLabel,
         payoutLabel

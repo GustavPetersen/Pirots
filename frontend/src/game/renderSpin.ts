@@ -67,8 +67,8 @@ async function drawBoard(stage: Container, board: SlotSymbol[], ms: number) {
 }
 
 function getSpriteAtTile(stage: Container, idx: number): Sprite {
-    const tiles = stage.getChildByLabel("tiles");
-    const middleTiles = tiles!.getChildByLabel("middleTiles");
+    const board = stage.getChildByLabel("board");
+    const middleTiles = board!.getChildByLabel("middleTiles");
     const tile = middleTiles!.getChildAt<Container>(idx);
 
     const sprite = tile.getChildByLabel("tile_fg") as Sprite | null;

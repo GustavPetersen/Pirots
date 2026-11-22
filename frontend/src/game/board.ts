@@ -27,7 +27,7 @@ function getTileStyle(row: number, col: number, last: number): TileStyle {
 }
 
 export function createBoard(x: number, y: number, tileSize: number, gridSize: number): Container {
-    const tiles = new Container({ label: "tiles" });
+    const board = new Container({ label: "board" });
     const middleTiles = new Container({ label: "middleTiles" });
     const edgeTiles = new Container({ label: "edgeTiles" });
     const last = gridSize - 1;
@@ -60,9 +60,9 @@ export function createBoard(x: number, y: number, tileSize: number, gridSize: nu
         }
     }
 
-    tiles.addChild(middleTiles, edgeTiles);
-    tiles.pivot.set((gridSize * tileSize) / 2, (gridSize * tileSize) / 2);
-    tiles.position.set(x, y);
+    board.addChild(middleTiles, edgeTiles);
+    board.pivot.set((gridSize * tileSize) / 2, (gridSize * tileSize) / 2);
+    board.position.set(x, y);
 
-    return tiles;
+    return board;
 }
