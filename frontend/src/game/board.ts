@@ -1,7 +1,9 @@
 import { QueryClient } from "@tanstack/react-query";
 import { Application, Container, Sprite, Assets, Texture, Text } from "pixi.js";
 import { Howl } from "howler";
-import { spin } from "./spin";
+import { renderSpin } from "./spin";
+import { getSpin } from "../api/game";
+import type { SpinResult } from "../utils/types";
 
 export default async function createBoard(container: HTMLElement, queryClient: QueryClient): Promise<Application> {
     const app = new Application();
@@ -181,11 +183,22 @@ export default async function createBoard(container: HTMLElement, queryClient: Q
             return;
         }
 
+        let spinResult: SpinResult = null!;
+        try {
+            spinResult = await queryClient.query({
+                queryKey: ["getSpin"],
+                queryFn: getSpin(5, 67),
+            });
+        } catch (error) {
+            alert(error);
+            return;
+        }
+
         spinButton.alpha = 0.6;
         isSpinning = true;
 
         jackpotSound.play();
-        await spin(app.stage, queryClient);
+        await renderSpin(app.stage, spinResult);
         await queryClient.invalidateQueries({ queryKey: ["me"] });
 
         isSpinning = false;
@@ -195,7 +208,6 @@ export default async function createBoard(container: HTMLElement, queryClient: Q
     app.stage.addChild(spinButton);
     app.stage.addChild(betLabel);
     app.stage.addChild(payoutLabel);
-    //spin(middleTiles, queryClient); // Spin the initail diamonds when loading the page
 
     return app;
 }

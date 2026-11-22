@@ -1,26 +1,12 @@
-import { QueryClient } from "@tanstack/react-query";
 import { type SpinResult, type SlotSymbol, } from "../utils/types";
 import { Container, Sprite, Text } from "pixi.js";
-import { getSpin } from "../api/game";
 import { BOARD_WIDTH, BOARD_HEIGHT, sleep, getSymbolTexture, PRISONERS, } from "../utils/constants";
 
-export async function spin(stage: Container, qc: QueryClient) {
-    let spinResult: SpinResult = null!;
-    try {
-        spinResult = await qc.query({
-            queryKey: ["getSpin"],
-            queryFn: getSpin(5, 67),
-        });
-    } catch (error) {
-        alert(error);
-        return;
-    }
-
-    const payoutLabel = stage.getChildByLabel("payoutLabel")! as Text;
-    payoutLabel.text = "Payout: 0";
-
+export async function renderSpin(stage: Container, spinResult: SpinResult) {
     const ms = 700;
     const board: SlotSymbol[] = new Array(BOARD_WIDTH * BOARD_HEIGHT).fill("empty");
+    const payoutLabel = stage.getChildByLabel("payoutLabel")! as Text;
+    payoutLabel.text = "Payout: 0";
 
     while (!spinResult.symbolReel.isEmpty()) {
         // Fill board
