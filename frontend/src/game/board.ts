@@ -4,6 +4,7 @@ import { Howl } from "howler";
 import { renderSpin } from "./spin";
 import { getSpin } from "../api/game";
 import type { SpinResult } from "../utils/types";
+import { createBetLabel, createPayoutLabel } from "./labels";
 
 export default async function createBoard(container: HTMLElement, queryClient: QueryClient): Promise<Application> {
     const app = new Application();
@@ -12,6 +13,7 @@ export default async function createBoard(container: HTMLElement, queryClient: Q
     container.appendChild(app.canvas);
 
     // Load assets
+    const jackpotSound = new Howl({ src: ["Assets/Sounds/JACKPOT.mp3"] });
     await Assets.init({ basePath: "Assets/Sprites/" })
     await Assets.load([
         { alias: "bg", src: "slots_background.png" },
@@ -136,46 +138,7 @@ export default async function createBoard(container: HTMLElement, queryClient: Q
         background.height / 2
     );
 
-    // create payout and bet label
-    const betAmount = 5;
-    const betLabel = new Text({
-        text: "Bet: " + betAmount,
-        style: {
-            fontFamily: "Arial, Helvetica, sans-serif",
-            fontSize: 28,
-            fontWeight: "bold",
-            fill: 0xffffff,
-            letterSpacing: 1,
-        },
-    });
-    betLabel.position.set(
-        spinButton.position.x,
-        spinButton.position.y + background.height * 0.25
-    );
-    betLabel.anchor.set(0.5);
-
-    // create payout and bet label
-    const payoutLabel = new Text({
-        text: "",
-        style: {
-            fontFamily: "Arial, Helvetica, sans-serif",
-            fontSize: 28,
-            fontWeight: "bold",
-            fill: 0xffffff,
-            letterSpacing: 1,
-        },
-    });
-    payoutLabel.position.set(
-        betLabel.position.x,
-        betLabel.position.y + background.height * 0.05
-    );
-    payoutLabel.anchor.set(0.5);
-    payoutLabel.label = "payoutLabel";
-
-
     // Setup api call on button click
-    const jackpotSound = new Howl({ src: ["Assets/Sounds/JACKPOT.mp3"] });
-
     spinButton.eventMode = "static";
     spinButton.cursor = "pointer";
     spinButton.on("pointerdown", async () => {
@@ -204,6 +167,15 @@ export default async function createBoard(container: HTMLElement, queryClient: Q
         isSpinning = false;
         spinButton.alpha = 1.0;
     });
+
+    const betLabel = createBetLabel(
+        spinButton.position.x,
+        spinButton.position.y + background.height * 0.25,
+    );
+    const payoutLabel = createPayoutLabel(
+        betLabel.position.x,
+        betLabel.position.y + background.height * 0.05,
+    )
 
     app.stage.addChild(spinButton);
     app.stage.addChild(betLabel);
