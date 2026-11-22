@@ -10,9 +10,9 @@ export async function spin(sprites: Container, qc: QueryClient, payoutLabel: Tex
     let spinResult: SpinResult = null!;
     try {
         spinResult = await qc.query({
-        queryKey: ["getSpin"],
-        queryFn: getSpin(6, 60),
-    });
+            queryKey: ["getSpin"],
+            queryFn: getSpin(6, 60),
+        });
     } catch (error) {
         alert(error);
         return;

@@ -16,14 +16,16 @@ public class AuthController : ControllerBase
 {
     private readonly UserManager<AppUser> _userManager;
     private readonly SignInManager<AppUser> _signInManager;
+    private readonly AppDbContext _dbContext;
 
     /// <summary>
     /// ...
     /// </summary>
-    public AuthController(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager)
+    public AuthController(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, AppDbContext dbContext)
     {
         _userManager = userManager;
         _signInManager = signInManager;
+        _dbContext = dbContext;
     }
 
     /// <summary>
@@ -65,7 +67,8 @@ public class AuthController : ControllerBase
     {
         AppUser newUser = new()
         {
-            UserName = req.UserName
+            UserName = req.UserName,
+            Wallet = new Wallet()
         };
 
         var result = await _userManager.CreateAsync(newUser, req.Password);
@@ -97,8 +100,8 @@ public class AuthController : ControllerBase
             await _signInManager.SignOutAsync(); // Invalidate the session
             return Unauthorized();
         }
-
-        MeResult result = new(curUser.UserName!, curUser.Wallet.Amount);
+        Wallet wallet = _dbContext.Wallets.First(wallet => wallet.UserId == curUser.Id);
+        MeResult result = new(curUser.UserName!,  wallet.Amount);
         return Ok(result);
     }
 }

@@ -3,7 +3,7 @@ import { Application, Container, Sprite, Assets, Texture, Text } from 'pixi.js';
 import { Howl } from 'howler';
 import { spin } from './spin';
 
-export default async function createBoard(container: HTMLElement): Promise<Application> {
+export default async function createBoard(container: HTMLElement, queryClient: QueryClient): Promise<Application> {
     const app = new Application();
     let isSpinning = false;
     await app.init({ backgroundColor: 0x000000, resizeTo: window });
@@ -170,7 +170,6 @@ export default async function createBoard(container: HTMLElement): Promise<Appli
 
     // Setup api call on button click
     const jackpotSound = new Howl({ src: ['Assets/Sounds/JACKPOT.mp3'] });
-    const queryClient = new QueryClient();
 
     spinButton.eventMode = 'static';
     spinButton.cursor = 'pointer';
@@ -182,6 +181,7 @@ export default async function createBoard(container: HTMLElement): Promise<Appli
         isSpinning = true
         jackpotSound.play();
         await spin(middleTiles, queryClient, payoutLabel);
+        await queryClient.invalidateQueries({ queryKey: ["me"] });
         isSpinning = false
         spinButton.alpha = 1.0;
     });

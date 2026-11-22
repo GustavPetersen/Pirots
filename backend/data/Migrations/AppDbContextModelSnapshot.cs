@@ -324,8 +324,7 @@ namespace backend.data.Migrations
 
             modelBuilder.Entity("backend.data.AppUser", b =>
                 {
-                    b.Navigation("Wallet")
-                        .IsRequired();
+                    b.Navigation("Wallet");
                 });
 #pragma warning restore 612, 618
         }

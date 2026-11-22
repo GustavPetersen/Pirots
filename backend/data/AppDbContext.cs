@@ -20,10 +20,10 @@ public class AppDbContext(DbContextOptions<AppDbContext> options)
         base.OnModelCreating(modelBuilder); 
 
         modelBuilder.Entity<AppUser>()
-            .HasOne(e => e.Wallet)
-            .WithOne(e => e.User)
-            .HasForeignKey<Wallet>(e => e.UserId)
-            .IsRequired();
+            .HasOne(user => user.Wallet)
+            .WithOne(wallet => wallet.User)
+            .HasForeignKey<Wallet>(wallet => wallet.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }
 

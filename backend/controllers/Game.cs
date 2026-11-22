@@ -6,7 +6,6 @@ using backend.dtos;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using backend.data;
-using System.Data.Common;
 using Microsoft.EntityFrameworkCore;
 
 /// <summary>
@@ -19,14 +18,16 @@ public class GameController : ControllerBase
 {
     private readonly UserManager<AppUser> _userManager;
     private readonly SignInManager<AppUser> _signInManager;
+    private readonly AppDbContext _dbContext;
     /// <summary>
     /// Constructor deluxe
     /// </summary>
     /// 
-    public GameController(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager)
+    public GameController(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, AppDbContext dbContext)
     {
         _userManager = userManager;
         _signInManager = signInManager;
+        _dbContext = dbContext;
     }
 
     /// <summary>
@@ -48,12 +49,19 @@ public class GameController : ControllerBase
             await _signInManager.SignOutAsync();
             return Unauthorized();
         }
-        if (curUser.Wallet.Amount - bet < 0)
+        
+        Wallet wallet = _dbContext.Wallets.First(wallet => wallet.UserId == curUser.Id);
+        if (wallet.Amount - bet < 0)
         {
             return Forbid();
         }
-        curUser.Wallet.Amount -= bet;
+
         SpinResult result = GameEngine.Spin(bet);
+        
+        float payout = (float) result.PrisonerWalks.SelectMany(stepList => stepList).Sum(step => step.Payout);
+        wallet.Amount += payout - bet;
+        await _dbContext.SaveChangesAsync(); 
+
         return Ok(result);
     }
 }

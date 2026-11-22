@@ -1,4 +1,3 @@
-using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Identity;
 
 namespace backend.data;
@@ -8,5 +7,5 @@ namespace backend.data;
 /// </summary>
 public class AppUser : IdentityUser
 {
-    public Wallet Wallet { get; set; } = new ();
+    public Wallet? Wallet { get; set; } 
 }
