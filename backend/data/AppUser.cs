@@ -7,5 +7,5 @@ namespace backend.data;
 /// </summary>
 public class AppUser : IdentityUser
 {
-    public Wallet? Wallet { get; set; } 
+    required public Wallet Wallet { get; set; }
 }

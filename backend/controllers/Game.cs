@@ -19,6 +19,7 @@ public class GameController : ControllerBase
     private readonly UserManager<AppUser> _userManager;
     private readonly SignInManager<AppUser> _signInManager;
     private readonly AppDbContext _dbContext;
+
     /// <summary>
     /// Constructor deluxe
     /// </summary>
@@ -40,7 +41,7 @@ public class GameController : ControllerBase
     [Authorize]
     [HttpGet]
     [Route("spin")]
-    public async Task<IActionResult> SpinReel(int bet, int idempotencyKey )
+    public async Task<IActionResult> SpinReel(int bet, int idempotencyKey)
     {
         // TODO: DO NOT RUN SPIN WITH SAME KEY
         AppUser? curUser = await _userManager.GetUserAsync(User);
@@ -49,7 +50,7 @@ public class GameController : ControllerBase
             await _signInManager.SignOutAsync();
             return Unauthorized();
         }
-        
+
         Wallet wallet = _dbContext.Wallets.First(wallet => wallet.UserId == curUser.Id);
         if (wallet.Amount - bet < 0)
         {
@@ -57,10 +58,10 @@ public class GameController : ControllerBase
         }
 
         SpinResult result = GameEngine.Spin(bet);
-        
-        float payout = (float) result.PrisonerWalks.SelectMany(stepList => stepList).Sum(step => step.Payout);
+
+        float payout = (float)result.PrisonerWalks.SelectMany(stepList => stepList).Sum(step => step.Payout);
         wallet.Amount += payout - bet;
-        await _dbContext.SaveChangesAsync(); 
+        await _dbContext.SaveChangesAsync();
 
         return Ok(result);
     }
