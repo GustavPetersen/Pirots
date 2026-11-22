@@ -11,8 +11,8 @@ async function apiRequest<T>(url: string, schema: z.ZodType<T>): Promise<T> {
         credentials: "include",
     });
     if (!response.ok) {
-        if (response.status=== 401) {
-            throw new Error('Unauthorized - Log in to play');
+        if (response.status === 401) {
+            throw new Error("Unauthorized - Log in to play");
         }
         throw new Error(`HTTP error! Status: ${response.status}`);
     }

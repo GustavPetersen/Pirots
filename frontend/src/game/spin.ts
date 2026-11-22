@@ -1,8 +1,8 @@
-import { QueryClient } from '@tanstack/react-query';
-import { type SpinResult, type SlotSymbol, } from '../utils/types';
-import { Container, Sprite, Text } from 'pixi.js';
-import { getSpin } from '../api/game';
-import { BOARD_WIDTH, BOARD_HEIGHT, sleep, getSymbolTexture, PRISONERS, } from '../utils/constants';
+import { QueryClient } from "@tanstack/react-query";
+import { type SpinResult, type SlotSymbol, } from "../utils/types";
+import { Container, Sprite, Text } from "pixi.js";
+import { getSpin } from "../api/game";
+import { BOARD_WIDTH, BOARD_HEIGHT, sleep, getSymbolTexture, PRISONERS, } from "../utils/constants";
 
 export async function spin(stage: Container, qc: QueryClient) {
     let spinResult: SpinResult = null!;
@@ -16,7 +16,7 @@ export async function spin(stage: Container, qc: QueryClient) {
         return;
     }
 
-    const payoutLabel = stage.getChildByLabel('payoutLabel')! as Text;
+    const payoutLabel = stage.getChildByLabel("payoutLabel")! as Text;
     payoutLabel.text = "Payout: 0";
 
     const ms = 700;

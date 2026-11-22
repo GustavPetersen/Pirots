@@ -1,5 +1,4 @@
 import type { UserData } from "../utils/types";
-import { USER_DATA } from "../utils/constants";
 
 const baseUrl = import.meta.env.VITE_API_URL ?? "/";
 

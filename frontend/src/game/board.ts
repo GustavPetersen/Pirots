@@ -1,7 +1,7 @@
-import { QueryClient } from '@tanstack/react-query';
-import { Application, Container, Sprite, Assets, Texture, Text } from 'pixi.js';
-import { Howl } from 'howler';
-import { spin } from './spin';
+import { QueryClient } from "@tanstack/react-query";
+import { Application, Container, Sprite, Assets, Texture, Text } from "pixi.js";
+import { Howl } from "howler";
+import { spin } from "./spin";
 
 export default async function createBoard(container: HTMLElement, queryClient: QueryClient): Promise<Application> {
     const app = new Application();
@@ -10,28 +10,28 @@ export default async function createBoard(container: HTMLElement, queryClient: Q
     container.appendChild(app.canvas);
 
     // Load assets
-    await Assets.init({ basePath: 'Assets/Sprites/' })
+    await Assets.init({ basePath: "Assets/Sprites/" })
     await Assets.load([
-        { alias: 'bg', src: 'slots_background.png' },
-        { alias: 'test', src: 'pirots_logo_650.png' },
-        { alias: 'tile_mid', src: 'slots_tile.png' },
-        { alias: 'tile_corner', src: 'slots_tile_corner.png' },
-        { alias: 'tile_straight', src: 'slots_tile_straight.png' },
-        { alias: 'spin_button', src: 'slots_spin_button.png' },
-        { alias: 'd_green', src: 'slots_diamond_green.png' },
-        { alias: 'd_blue', src: 'slots_diamond_blue.png' },
-        { alias: 'd_orange', src: 'slots_diamond_orange.png' },
-        { alias: 'd_red', src: 'slots_diamond_red.png' },
-        { alias: 'p_green', src: 'slots_prisoner_green.png' },
-        { alias: 'p_blue', src: 'slots_prisoner_blue.png' },
-        { alias: 'p_orange', src: 'slots_prisoner_orange.png' },
-        { alias: 'p_red', src: 'slots_prisoner_red.png' },
-        { alias: 'empty', src: 'transparent.png' },
-        { alias: 'pirots', src: 'pirots_logo_650.png' },
+        { alias: "bg", src: "slots_background.png" },
+        { alias: "test", src: "pirots_logo_650.png" },
+        { alias: "tile_mid", src: "slots_tile.png" },
+        { alias: "tile_corner", src: "slots_tile_corner.png" },
+        { alias: "tile_straight", src: "slots_tile_straight.png" },
+        { alias: "spin_button", src: "slots_spin_button.png" },
+        { alias: "d_green", src: "slots_diamond_green.png" },
+        { alias: "d_blue", src: "slots_diamond_blue.png" },
+        { alias: "d_orange", src: "slots_diamond_orange.png" },
+        { alias: "d_red", src: "slots_diamond_red.png" },
+        { alias: "p_green", src: "slots_prisoner_green.png" },
+        { alias: "p_blue", src: "slots_prisoner_blue.png" },
+        { alias: "p_orange", src: "slots_prisoner_orange.png" },
+        { alias: "p_red", src: "slots_prisoner_red.png" },
+        { alias: "empty", src: "transparent.png" },
+        { alias: "pirots", src: "pirots_logo_650.png" },
     ]);
 
     // Create background
-    const background = Sprite.from('bg');
+    const background = Sprite.from("bg");
     background.setSize(app.screen.width, app.screen.height)
     app.stage.addChild(background);
 
@@ -53,29 +53,29 @@ export default async function createBoard(container: HTMLElement, queryClient: Q
 
             if (i != 0 && i != gridSize - 1 &&                  // If middle tile
                 j != 0 && j != gridSize - 1) {
-                texture = Texture.from('tile_mid');
+                texture = Texture.from("tile_mid");
                 subContainer = middleTiles;
             } else if (i == 0 && j == 0) {                      // If top left corner
-                texture = Texture.from('tile_corner');
+                texture = Texture.from("tile_corner");
             } else if (i == gridSize - 1 && j == 0) {           // If top right corner
-                texture = Texture.from('tile_corner');
+                texture = Texture.from("tile_corner");
                 rotation = - Math.PI / 2;
                 anchorX = 1;
             } else if (i == 0 && j == gridSize - 1) {           // If bottom left corner
-                texture = Texture.from('tile_corner');
+                texture = Texture.from("tile_corner");
                 rotation = Math.PI / 2
                 anchorY = 1;
             } else if (i == gridSize - 1 && j == gridSize - 1) {// If bottom right corner
-                texture = Texture.from('tile_corner');
+                texture = Texture.from("tile_corner");
                 rotation = Math.PI;
                 anchorX = 1;
                 anchorY = 1;
             } else if (i == 0 || i == gridSize - 1) {           // If left or right side
-                texture = Texture.from('tile_straight');
+                texture = Texture.from("tile_straight");
                 rotation = Math.PI / 2;
                 anchorY = 1;
             } else if (j == 0 || j == gridSize - 1) {           // If top or buttom
-                texture = Texture.from('tile_straight');
+                texture = Texture.from("tile_straight");
             }
 
             const tileBg = Sprite.from(texture);
@@ -85,7 +85,7 @@ export default async function createBoard(container: HTMLElement, queryClient: Q
                 tileBg.rotation = rotation;
             }
             tileBg.setSize(tileSize);
-            tileBg.label = 'tile_bg';
+            tileBg.label = "tile_bg";
 
             const tile = new Container();
             tile.position.set(tileSize * j, tileSize * i);
@@ -94,17 +94,17 @@ export default async function createBoard(container: HTMLElement, queryClient: Q
         }
     }
 
-    middleTiles.label = 'middleTiles';
+    middleTiles.label = "middleTiles";
     tiles.addChild(middleTiles);
-    edgeTiles.label = 'edgeTiles';
+    edgeTiles.label = "edgeTiles";
     tiles.addChild(edgeTiles);
 
     // Add placeholder foreground sprites for all middle tiles
     for (var i = 0; i < middleTiles.children.length; i++) {
         const tile = middleTiles.getChildAt<Container>(i);
-        const tileFg = Sprite.from('empty');
+        const tileFg = Sprite.from("empty");
 
-        tileFg.label = 'tile_fg';
+        tileFg.label = "tile_fg";
         tileFg.setSize(tileSize * 0.8);
         tileFg.anchor.set(0.5);
         tileFg.position.set(
@@ -121,11 +121,11 @@ export default async function createBoard(container: HTMLElement, queryClient: Q
         background.height / 2 - tiles.height / 2
     );
 
-    tiles.label = 'tiles';
+    tiles.label = "tiles";
     app.stage.addChild(tiles);
 
     // Create spin button
-    const spinButton = Sprite.from('spin_button');
+    const spinButton = Sprite.from("spin_button");
     spinButton.anchor.set(0.5);
 
     const tilesEndX = tiles.x + tiles.width;
@@ -137,11 +137,11 @@ export default async function createBoard(container: HTMLElement, queryClient: Q
     // create payout and bet label
     const betAmount = 5;
     const betLabel = new Text({
-        text: 'Bet: ' + betAmount,
+        text: "Bet: " + betAmount,
         style: {
-            fontFamily: 'Arial, Helvetica, sans-serif',
+            fontFamily: "Arial, Helvetica, sans-serif",
             fontSize: 28,
-            fontWeight: 'bold',
+            fontWeight: "bold",
             fill: 0xffffff,
             letterSpacing: 1,
         },
@@ -154,11 +154,11 @@ export default async function createBoard(container: HTMLElement, queryClient: Q
 
     // create payout and bet label
     const payoutLabel = new Text({
-        text: '',
+        text: "",
         style: {
-            fontFamily: 'Arial, Helvetica, sans-serif',
+            fontFamily: "Arial, Helvetica, sans-serif",
             fontSize: 28,
-            fontWeight: 'bold',
+            fontWeight: "bold",
             fill: 0xffffff,
             letterSpacing: 1,
         },
@@ -168,15 +168,15 @@ export default async function createBoard(container: HTMLElement, queryClient: Q
         betLabel.position.y + background.height * 0.05
     );
     payoutLabel.anchor.set(0.5);
-    payoutLabel.label = 'payoutLabel';
+    payoutLabel.label = "payoutLabel";
 
 
     // Setup api call on button click
-    const jackpotSound = new Howl({ src: ['Assets/Sounds/JACKPOT.mp3'] });
+    const jackpotSound = new Howl({ src: ["Assets/Sounds/JACKPOT.mp3"] });
 
-    spinButton.eventMode = 'static';
-    spinButton.cursor = 'pointer';
-    spinButton.on('pointerdown', async () => {
+    spinButton.eventMode = "static";
+    spinButton.cursor = "pointer";
+    spinButton.on("pointerdown", async () => {
         if (isSpinning) {
             return;
         }
