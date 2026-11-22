@@ -44,22 +44,22 @@ public class GameController : ControllerBase
     public async Task<IActionResult> SpinReel(int bet, int idempotencyKey)
     {
         // TODO: DO NOT RUN SPIN WITH SAME KEY
-        AppUser? curUser = await _userManager.GetUserAsync(User);
-        if (curUser is null)
+        string? userId = _userManager.GetUserId(User);
+        Wallet? wallet = await _dbContext.Wallets.SingleOrDefaultAsync(w => w.UserId == userId);
+        if (wallet is null)
         {
             await _signInManager.SignOutAsync();
             return Unauthorized();
         }
 
-        Wallet wallet = _dbContext.Wallets.First(wallet => wallet.UserId == curUser.Id);
         if (wallet.Amount - bet < 0)
         {
             return Forbid();
         }
 
         SpinResult result = GameEngine.Spin(bet);
+        float payout = (float)result.PrisonerWalks.SelectMany(walk => walk).Sum(step => step.Payout);
 
-        float payout = (float)result.PrisonerWalks.SelectMany(stepList => stepList).Sum(step => step.Payout);
         wallet.Amount += payout - bet;
         await _dbContext.SaveChangesAsync();
 
