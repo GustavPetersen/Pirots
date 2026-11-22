@@ -143,7 +143,7 @@ export default async function createBoard(container: HTMLElement, queryClient: Q
 
             jackpotSound.play();
             await renderSpin(app.stage, spinResult);
-            await queryClient.invalidateQueries({ queryKey: ["GetMe"] });
+            await queryClient.invalidateQueries({ queryKey: ["getMe"] });
         }
     )
 
