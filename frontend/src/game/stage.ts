@@ -5,9 +5,9 @@ import { renderSpin } from "./renderSpin";
 import { getSpin } from "../api/game";
 import { createBetLabel, createPayoutLabel } from "./labels";
 import { createSpinButton } from "./spinButton";
-import { createTiles } from "./tiles";
+import { createBoard } from "./tiles";
 
-export default async function createBoard(container: HTMLElement, queryClient: QueryClient): Promise<Application> {
+export default async function createStage(container: HTMLElement, queryClient: QueryClient): Promise<Application> {
     const app = new Application();
     await app.init({ backgroundColor: 0x000000, resizeTo: window });
     container.appendChild(app.canvas);
@@ -37,7 +37,7 @@ export default async function createBoard(container: HTMLElement, queryClient: Q
     const background = Sprite.from("bg");
     background.setSize(app.screen.width, app.screen.height)
 
-    const tiles = createTiles(background.width / 2, background.height / 2, 90, 8);
+    const tiles = createBoard(background.width / 2, background.height / 2, 90, 8);
     const tilesEndX = tiles.x + tiles.width / 2;
 
     const spinButton = createSpinButton(

@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import type { Application } from "pixi.js";
-import createBoard from "../game/board";
+import createStage from "../game/stage";
 import { useQueryClient } from "@tanstack/react-query";
 
 function Game() {
@@ -11,7 +11,7 @@ function Game() {
         let app: Application | undefined;
         let cancelled = false;
 
-        createBoard(containerRef.current!, queryClient).then((a) => {
+        createStage(containerRef.current!, queryClient).then((a) => {
             if (cancelled) {
                 a.destroy(true, { children: true });
             } else {

@@ -26,7 +26,7 @@ function getTileStyle(row: number, col: number, last: number): TileStyle {
     return { texture: "tile_mid", rotation: 0, anchor: [0, 0] };
 }
 
-export function createTiles(x: number, y: number, tileSize: number, gridSize: number): Container {
+export function createBoard(x: number, y: number, tileSize: number, gridSize: number): Container {
     const tiles = new Container({ label: "tiles" });
     const middleTiles = new Container({ label: "middleTiles" });
     const edgeTiles = new Container({ label: "edgeTiles" });
