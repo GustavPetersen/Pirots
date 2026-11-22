@@ -4,7 +4,7 @@ import { Container, Sprite, Text } from 'pixi.js';
 import { getSpin } from '../api/game';
 import { BOARD_WIDTH, BOARD_HEIGHT, sleep, getSymbolTexture, PRISONERS, } from '../utils/constants';
 
-export async function spin(sprites: Container, qc: QueryClient, payoutLabel: Text) {
+export async function spin(stage: Container, qc: QueryClient, payoutLabel: Text) {
 
     payoutLabel.text = "Payout: 0";
     let spinResult: SpinResult = null!;
@@ -27,7 +27,7 @@ export async function spin(sprites: Container, qc: QueryClient, payoutLabel: Tex
             if (symbol === "empty") board[i] = spinResult.symbolReel.popFront()!;
         });
 
-        await drawBoard(sprites, board, ms);
+        await drawBoard(stage, board, ms);
 
         // Walk prisoners
         for (var _ = 0; _ < PRISONERS.length; _++) {
@@ -42,9 +42,9 @@ export async function spin(sprites: Container, qc: QueryClient, payoutLabel: Tex
                 const prevStep = walk[i - 1];
                 const curStep = walk[i];
 
-                getSpriteAt(sprites, prevStep.tile).texture = emptyTexture;
+                getSpriteAtTile(stage, prevStep.tile).texture = emptyTexture;
                 board[prevStep.tile] = "empty";
-                getSpriteAt(sprites, curStep.tile).texture = pTexture;
+                getSpriteAtTile(stage, curStep.tile).texture = pTexture;
                 board[curStep.tile] = pSymbol;
 
                 const currentText = payoutLabel.text;
@@ -67,20 +67,24 @@ export async function spin(sprites: Container, qc: QueryClient, payoutLabel: Tex
             board[tile] = "empty";
         }
 
-        await drawBoard(sprites, board, ms);
+        await drawBoard(stage, board, ms);
     }
 }
 
-async function drawBoard(sprites: Container, board: SlotSymbol[], ms: number) {
+async function drawBoard(stage: Container, board: SlotSymbol[], ms: number) {
     board.forEach((symbol, i) => {
-        getSpriteAt(sprites, i).texture = getSymbolTexture(symbol);
+        getSpriteAtTile(stage, i).texture = getSymbolTexture(symbol);
     });
     await sleep(ms);
 }
 
-function getSpriteAt(sprites: Container, idx: number): Sprite {
-    const tile = sprites.getChildAt<Container>(idx);
+function getSpriteAtTile(stage: Container, idx: number): Sprite {
+    const tiles = stage.getChildByLabel("tiles");
+    const middleTiles = tiles!.getChildByLabel("middleTiles");
+    const tile = middleTiles!.getChildAt<Container>(idx);
+
     const sprite = tile.getChildByLabel("tile_fg") as Sprite | null;
     if (!sprite) throw new Error(`No tile_fg at ${idx}`);
+
     return sprite;
 }
