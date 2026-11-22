@@ -175,23 +175,13 @@ namespace backend.data.Migrations
 
             modelBuilder.Entity("Wallet", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<float>("Amount")
-                        .HasColumnType("real");
-
                     b.Property<string>("UserId")
-                        .IsRequired()
                         .HasColumnType("text");
 
-                    b.HasKey("Id");
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("numeric");
 
-                    b.HasIndex("UserId")
-                        .IsUnique();
+                    b.HasKey("UserId");
 
                     b.ToTable("Wallets");
                 });
@@ -324,7 +314,8 @@ namespace backend.data.Migrations
 
             modelBuilder.Entity("backend.data.AppUser", b =>
                 {
-                    b.Navigation("Wallet");
+                    b.Navigation("Wallet")
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }
