@@ -1,10 +1,11 @@
 import { QueryClient } from "@tanstack/react-query";
-import { Application, Container, Sprite, Assets, Texture } from "pixi.js";
+import { Application, Sprite, Assets } from "pixi.js";
 import { Howl } from "howler";
 import { renderSpin } from "./renderSpin";
 import { getSpin } from "../api/game";
 import { createBetLabel, createPayoutLabel } from "./labels";
 import { createSpinButton } from "./spinButton";
+import { createTiles } from "./tiles";
 
 export default async function createBoard(container: HTMLElement, queryClient: QueryClient): Promise<Application> {
     const app = new Application();
@@ -36,98 +37,10 @@ export default async function createBoard(container: HTMLElement, queryClient: Q
     // Create background
     const background = Sprite.from("bg");
     background.setSize(app.screen.width, app.screen.height)
-    app.stage.addChild(background);
 
-    // Create tiles 
-    const tiles = new Container();
-    const middleTiles = new Container();
-    const edgeTiles = new Container();
+    const tiles = createTiles(background.width / 2, background.height / 2, 90, 8);
+    const tilesEndX = tiles.x + tiles.width / 2;
 
-    const tileSize = 90;
-    const gridSize = 8;
-
-    for (var i = 0; i < gridSize; i++) {
-        for (var j = 0; j < gridSize; j++) {
-            var texture = Texture.EMPTY;
-            var subContainer = edgeTiles;
-            var rotation = 0;
-            var anchorX = 0;
-            var anchorY = 0;
-
-            if (i != 0 && i != gridSize - 1 &&                  // If middle tile
-                j != 0 && j != gridSize - 1) {
-                texture = Texture.from("tile_mid");
-                subContainer = middleTiles;
-            } else if (i == 0 && j == 0) {                      // If top left corner
-                texture = Texture.from("tile_corner");
-            } else if (i == gridSize - 1 && j == 0) {           // If top right corner
-                texture = Texture.from("tile_corner");
-                rotation = - Math.PI / 2;
-                anchorX = 1;
-            } else if (i == 0 && j == gridSize - 1) {           // If bottom left corner
-                texture = Texture.from("tile_corner");
-                rotation = Math.PI / 2
-                anchorY = 1;
-            } else if (i == gridSize - 1 && j == gridSize - 1) {// If bottom right corner
-                texture = Texture.from("tile_corner");
-                rotation = Math.PI;
-                anchorX = 1;
-                anchorY = 1;
-            } else if (i == 0 || i == gridSize - 1) {           // If left or right side
-                texture = Texture.from("tile_straight");
-                rotation = Math.PI / 2;
-                anchorY = 1;
-            } else if (j == 0 || j == gridSize - 1) {           // If top or buttom
-                texture = Texture.from("tile_straight");
-            }
-
-            const tileBg = Sprite.from(texture);
-            // Rotate corners
-            if (rotation != 0) {
-                tileBg.anchor.set(anchorX, anchorY);
-                tileBg.rotation = rotation;
-            }
-            tileBg.setSize(tileSize);
-            tileBg.label = "tile_bg";
-
-            const tile = new Container();
-            tile.position.set(tileSize * j, tileSize * i);
-            tile.addChild(tileBg);
-            subContainer.addChild(tile);
-        }
-    }
-
-    middleTiles.label = "middleTiles";
-    tiles.addChild(middleTiles);
-    edgeTiles.label = "edgeTiles";
-    tiles.addChild(edgeTiles);
-
-    // Add placeholder foreground sprites for all middle tiles
-    for (var i = 0; i < middleTiles.children.length; i++) {
-        const tile = middleTiles.getChildAt<Container>(i);
-        const tileFg = Sprite.from("empty");
-
-        tileFg.label = "tile_fg";
-        tileFg.setSize(tileSize * 0.8);
-        tileFg.anchor.set(0.5);
-        tileFg.position.set(
-            tile.width / 2,
-            tile.height / 2,
-        );
-
-        tile.addChild(tileFg);
-    }
-
-    // Center tiles
-    tiles.position.set(
-        background.width / 2 - tiles.width / 2,
-        background.height / 2 - tiles.height / 2
-    );
-
-    tiles.label = "tiles";
-    app.stage.addChild(tiles);
-
-    const tilesEndX = tiles.x + tiles.width;
     const spinButton = createSpinButton(
         tilesEndX + (background.width - tilesEndX) / 2,
         background.height / 2,
@@ -156,6 +69,8 @@ export default async function createBoard(container: HTMLElement, queryClient: Q
         betLabel.position.y + background.height * 0.05,
     )
 
+    app.stage.addChild(background);
+    app.stage.addChild(tiles);
     app.stage.addChild(spinButton);
     app.stage.addChild(betLabel);
     app.stage.addChild(payoutLabel);
