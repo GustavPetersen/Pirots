@@ -11,7 +11,7 @@ export async function spin(sprites: Container, qc: QueryClient, payoutLabel: Tex
     try {
         spinResult = await qc.query({
             queryKey: ["getSpin"],
-            queryFn: getSpin(6, 60),
+            queryFn: getSpin(5, 67),
         });
     } catch (error) {
         alert(error);

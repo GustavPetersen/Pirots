@@ -63,7 +63,7 @@ export default async function createBoard(container: HTMLElement, queryClient: Q
                 anchorX = 1;
             } else if (i == 0 && j == gridSize - 1) {           // If bottom left corner
                 texture = Texture.from('tile_corner');
-                rotation =  Math.PI / 2
+                rotation = Math.PI / 2
                 anchorY = 1;
             } else if (i == gridSize - 1 && j == gridSize - 1) {// If bottom right corner
                 texture = Texture.from('tile_corner');
@@ -94,7 +94,9 @@ export default async function createBoard(container: HTMLElement, queryClient: Q
         }
     }
 
+    middleTiles.label = 'middleTiles';
     tiles.addChild(middleTiles);
+    edgeTiles.label = 'edgeTiles';
     tiles.addChild(edgeTiles);
 
     // Add placeholder foreground sprites for all middle tiles
@@ -119,6 +121,7 @@ export default async function createBoard(container: HTMLElement, queryClient: Q
         background.height / 2 - tiles.height / 2
     );
 
+    tiles.label = 'tiles';
     app.stage.addChild(tiles);
 
     // Create spin button
@@ -147,7 +150,7 @@ export default async function createBoard(container: HTMLElement, queryClient: Q
         spinButton.position.x,
         spinButton.position.y + background.height * 0.25
     );
-    betLabel.anchor.set(0.5)
+    betLabel.anchor.set(0.5);
 
     // create payout and bet label
     const payoutLabel = new Text({
@@ -164,7 +167,7 @@ export default async function createBoard(container: HTMLElement, queryClient: Q
         betLabel.position.x,
         betLabel.position.y + background.height * 0.05
     );
-    payoutLabel.anchor.set(0.5)
+    payoutLabel.anchor.set(0.5);
     payoutLabel.label = 'payoutLabel';
 
 
@@ -177,16 +180,17 @@ export default async function createBoard(container: HTMLElement, queryClient: Q
         if (isSpinning) {
             return;
         }
+
         spinButton.alpha = 0.6;
-        isSpinning = true
+        isSpinning = true;
+
         jackpotSound.play();
-        await spin(middleTiles, queryClient, payoutLabel);
+        await spin(app.stage, queryClient, payoutLabel);
         await queryClient.invalidateQueries({ queryKey: ["me"] });
-        isSpinning = false
+
+        isSpinning = false;
         spinButton.alpha = 1.0;
     });
-
-
 
     app.stage.addChild(spinButton);
     app.stage.addChild(betLabel);
