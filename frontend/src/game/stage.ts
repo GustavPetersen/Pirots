@@ -2,11 +2,10 @@ import { QueryClient } from "@tanstack/react-query";
 import { Application, Sprite, Assets } from "pixi.js";
 import { Howl } from "howler";
 import { renderSpin } from "./renderSpin";
-import { getSpin } from "../api/game";
+import { spin } from "../api/queries";
 import { createBetLabel, createPayoutLabel } from "./labels";
 import { createSpinButton } from "./spinButton";
 import { createBoard } from "./board";
-import { onStatus } from "../utils/Errors";
 
 export default async function createStage(container: HTMLElement, queryClient: QueryClient): Promise<Application> {
     const app = new Application();
@@ -45,18 +44,12 @@ export default async function createStage(container: HTMLElement, queryClient: Q
         boardEndX + (background.width - boardEndX) / 2,
         background.height / 2,
         async () => {
-            const spinResult = await queryClient
-                .query({ queryKey: ["getSpin"], queryFn: getSpin(5, 67) })
-                .catch(onStatus([401], () => {
-                    alert("Log in before playing")
-                    return null;
-                }));
-
+            const spinResult = await queryClient.query({ queryKey: ["spin"], queryFn: () => spin(5, 67) })
             if (!spinResult) return;
 
             jackpotSound.play();
             await renderSpin(app.stage, spinResult);
-            await queryClient.invalidateQueries({ queryKey: ["getMe"] });
+            await queryClient.invalidateQueries({ queryKey: ["me"] });
         }
     );
 

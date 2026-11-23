@@ -35,13 +35,12 @@ public class GameController : ControllerBase
     /// Simulates a spin with the given bet size returns instructions for frontend
     /// visualization and the payout (not implemented)
     /// </summary>
-    /// <param name="bet"> The amount of cash to spin for </param>
-    /// <param name="idempotencyKey"> An unique spin identifier to prevent double spins </param>
+    /// <param name="req"> ... </param>
     /// <returns>Instructions to render the board changes and the final payout (not implemented) </returns>
     [Authorize]
-    [HttpGet]
+    [HttpPost]
     [Route("spin")]
-    public async Task<IActionResult> SpinReel(int bet, int idempotencyKey)
+    public async Task<IActionResult> SpinReel(SpinRequest req)
     {
         // TODO: DO NOT RUN SPIN WITH SAME KEY
         string? userId = _userManager.GetUserId(User);
@@ -52,15 +51,15 @@ public class GameController : ControllerBase
             return Unauthorized();
         }
 
-        if (wallet.Amount - bet < 0)
+        if (wallet.Amount - req.Bet < 0)
         {
             return Conflict();
         }
 
-        SpinResult result = GameEngine.Spin(bet);
+        SpinResult result = GameEngine.Spin(req.Bet);
 
         decimal payout = result.PrisonerWalks.SelectMany(walk => walk).Sum(step => step.Payout);
-        wallet.Amount += payout - bet;
+        wallet.Amount += payout - req.Bet;
         await _dbContext.SaveChangesAsync();
 
         return Ok(result);

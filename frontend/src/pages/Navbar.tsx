@@ -1,17 +1,17 @@
 import { Link } from "react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { getMe, logout } from "../api/auth";
+import { me, logout } from "../api/queries";
 
 function Navbar() {
     const queryClient = useQueryClient();
-    const result = useQuery({ queryKey: ["getMe"], queryFn: getMe });
+    const result = useQuery({ queryKey: ["me"], queryFn: me });
 
     const balance: number | null = result.data?.balance ?? null;
     const userName: string | null = result.data?.userName ?? null;
 
     async function handleLogout() {
         await logout();
-        await queryClient.invalidateQueries({ queryKey: ["getMe"] });
+        await queryClient.invalidateQueries({ queryKey: ["me"] });
     }
 
     return (

@@ -1,7 +1,7 @@
 import { useState, type FormEvent } from "react";
 import { useNavigate } from "react-router";
 import { useQueryClient } from "@tanstack/react-query";
-import { login } from "../api/auth";
+import { login } from "../api/queries";
 
 function Login() {
     const navigate = useNavigate();
@@ -16,7 +16,7 @@ function Login() {
         setError(null);
         try {
             await login(userName, password, rememberMe);
-            await queryClient.invalidateQueries({ queryKey: ["getMe"] });
+            await queryClient.invalidateQueries({ queryKey: ["me"] });
             navigate("/");
         } catch {
             setError("Login failed");
