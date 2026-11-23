@@ -1,4 +1,6 @@
-import type { UserData } from "../utils/types";
+import type { SpinResult, UserData } from "../utils/types";
+import { SPIN_RESULT_SCHEMA, USER_DATA_SCHEMA } from "../utils/constants";
+import { HttpError } from "../utils/Errors";
 
 const baseUrl = import.meta.env.VITE_API_URL ?? "/";
 
@@ -9,9 +11,8 @@ async function authRequest(url: string, method: string, body?: unknown): Promise
         headers: body ? { "Content-Type": "application/json" } : undefined,
         body: body ? JSON.stringify(body) : undefined,
     });
-    if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-    }
+
+    if (!response.ok) throw new HttpError(response.status);
     return response;
 }
 
@@ -27,11 +28,12 @@ export async function logout(): Promise<void> {
     await authRequest("/auth/logout", "POST");
 }
 
-export async function getMe(): Promise<UserData | null> {
-    try {
-        const response = await authRequest("/auth/me", "GET");
-        return await response.json();
-    } catch {
-        return null;
-    }
+export async function getMe(): Promise<UserData> {
+    const response = await authRequest("/auth/me", "GET");
+    return USER_DATA_SCHEMA.parse(await response.json());
+}
+
+export async function getSpin(bet: number, idempotencyKey: number): Promise<SpinResult> {
+    const response = await authRequest("/game/spin", "GET", { bet, idempotencyKey });
+    return SPIN_RESULT_SCHEMA.parse(await response.json());
 }

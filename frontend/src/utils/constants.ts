@@ -13,7 +13,7 @@ export const STEP_SCHEMA = z.object({
     payout: z.number(),
 });
 
-export const USER_DATA = z.object({
+export const USER_DATA_SCHEMA = z.object({
     userName: z.string(),
     balance: z.number(),
 })

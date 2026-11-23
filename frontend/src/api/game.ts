@@ -1,23 +1,19 @@
 import * as z from "zod";
 import type { SpinResult } from "../utils/types";
 import { SPIN_RESULT_SCHEMA } from "../utils/constants";
+import { HttpError } from "../utils/Errors";
 
 const baseUrl = import.meta.env.VITE_API_URL ?? "/";
 
-async function apiRequest<T>(url: string, schema: z.ZodType<T>): Promise<T> {
+async function apiRequest<T>(url: string, responseSchema: z.ZodType<T>): Promise<T> {
 
     const response = await fetch(`${baseUrl}${url}`, {
         method: "GET",
         credentials: "include",
     });
-    if (!response.ok) {
-        if (response.status === 401) {
-            throw new Error("Unauthorized - Log in to play");
-        }
-        throw new Error(`HTTP error! Status: ${response.status}`);
-    }
 
-    return schema.parse(await response.json());
+    if (!response.ok) throw new HttpError(response.status);
+    return responseSchema.parse(await response.json());
 }
 
 export function getSpin(bet: number, idempotencyKey: number): () => Promise<SpinResult> {

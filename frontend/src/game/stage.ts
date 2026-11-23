@@ -6,6 +6,7 @@ import { getSpin } from "../api/game";
 import { createBetLabel, createPayoutLabel } from "./labels";
 import { createSpinButton } from "./spinButton";
 import { createBoard } from "./board";
+import { onStatus } from "../utils/Errors";
 
 export default async function createStage(container: HTMLElement, queryClient: QueryClient): Promise<Application> {
     const app = new Application();
@@ -46,10 +47,10 @@ export default async function createStage(container: HTMLElement, queryClient: Q
         async () => {
             const spinResult = await queryClient
                 .query({ queryKey: ["getSpin"], queryFn: getSpin(5, 67) })
-                .catch((error) => {
-                    alert(error);
+                .catch(onStatus([401], () => {
+                    alert("Log in before playing")
                     return null;
-                });
+                }));
 
             if (!spinResult) return;
 
