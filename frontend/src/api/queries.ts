@@ -2,7 +2,7 @@ import type { SpinResult, UserData } from "../utils/types";
 import { SPIN_RESULT_SCHEMA, USER_DATA_SCHEMA } from "../utils/constants";
 import { HttpError, onStatus } from "../utils/Errors";
 
-const baseUrl = import.meta.env.VITE_API_URL ?? "/";
+const baseUrl = import.meta.env.VITE_API_URL;
 
 async function apiRequest(url: string, method: string, body?: unknown): Promise<Response> {
     const response = await fetch(`${baseUrl}${url}`, {

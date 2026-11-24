@@ -11,7 +11,7 @@ using backend.data;
 /// Controller for auth requests
 /// </summary>
 [ApiController]
-[Route("auth")]
+[Route("api/auth")]
 [Produces("application/json")]
 public class AuthController : ControllerBase
 {

@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore;
 /// Controller for game requests
 /// </summary>
 [ApiController]
-[Route("game")]
+[Route("api/game")]
 [Produces("application/json")]
 public class GameController : ControllerBase
 {
