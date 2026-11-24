@@ -1,11 +1,15 @@
+{
+	servers {
+		trusted_proxies static private_ranges
+		client_ip_headers CF-Connecting-IP X-Forwarded-For
+	}
+}
+
 :80 {
 	encode gzip zstd
 
-	handle /auth/* {
-		reverse_proxy api:8080
-	}
-
-	handle /game/* {
+	@api path /api /api/*
+	handle @api {
 		reverse_proxy api:8080
 	}
 

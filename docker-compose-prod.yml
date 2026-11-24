@@ -6,7 +6,6 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB_NAME} 
     restart: unless-stopped
-    network: dokploy-network
     volumes:
       - pg_data:/var/lib/postgresql/data
     healthcheck:
@@ -14,37 +13,36 @@ services:
       interval: 5s
 
   api:
+    image: 21philip/pirots-api:latest
     build:
       context: ./backend
       target: production
     environment:
       ConnectionStrings__Default: Host=db;Port=5432;Database=${POSTGRES_DB_NAME};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}
-    depends_on: db
+    depends_on: [db]
     restart: unless-stopped
-    network: dokploy-network
 
   web:
+    image: 21philip/pirots-web:latest
     build:
       context: ./frontend
       target: production
-    depends_on: api
+    environment:
+      - VITE_API_URL=https://pirots.goofyahh.dk/api
+    depends_on: [api]
     restart: unless-stopped
-    network: dokploy-network
 
-  caddy:
-    image: caddy:latest
+  proxy:
+    image: 21philip/pirots-proxy:latest
+    build:
+      context: ./proxy
+      target: production
+    restart: unless-stopped
     ports:
       - "80:80"
-    restart: unless-stopped
-    network: dokploy-network
     volumes:
-      - ./proxy/Caddyfile:/etc/caddy/Caddyfile
       - caddy_data:/data
       - caddy_config:/config
-
-networks:
-  dokploy-network:
-    external: true
 
 volumes:
   pg_data:

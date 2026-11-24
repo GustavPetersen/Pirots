@@ -11,6 +11,6 @@ COPY . .
 CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0"]
 
 # Production build
-FROM base AS build
+FROM base AS production
 COPY . .
 RUN npm run build
