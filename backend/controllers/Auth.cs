@@ -2,6 +2,7 @@ namespace backend.controllers;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using backend.dtos;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -36,6 +37,7 @@ public class AuthController : ControllerBase
     /// <returns> ... </returns>
     [HttpPost]
     [Route("login")]
+    [EnableRateLimiting("auth")]
     public async Task<IActionResult> Login(LoginRequest req)
     {
         var result = await _signInManager.PasswordSignInAsync(
@@ -64,6 +66,7 @@ public class AuthController : ControllerBase
     /// <returns> ... </returns>
     [HttpPost]
     [Route("signup")]
+    [EnableRateLimiting("auth")]
     public async Task<IActionResult> SignUp(SignUpRequest req)
     {
         AppUser newUser = new()

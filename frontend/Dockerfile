@@ -10,14 +10,17 @@ FROM base AS development
 COPY . .
 CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0"]
 
-# Production build (Vite inlines VITE_* vars at build time)
+# Production build
 FROM base AS build
 ARG VITE_API_URL=/api
 ENV VITE_API_URL=$VITE_API_URL
 COPY . .
 RUN npm run build
 
-# Production serve: vite preview on its default port (4173)
-FROM build AS production
+# Production serve: static files via Caddy on port 4173, as a non-root user
+FROM caddy:2-alpine AS production
+COPY Caddyfile /etc/caddy/Caddyfile
+COPY --from=build /app/dist /srv
+ENV XDG_DATA_HOME=/tmp/data XDG_CONFIG_HOME=/tmp/config
+USER nobody
 EXPOSE 4173
-CMD ["npm", "run", "preview", "--", "--host", "0.0.0.0"]

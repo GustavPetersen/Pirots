@@ -19,5 +19,7 @@ FROM mcr.microsoft.com/dotnet/aspnet:10.0-alpine AS production
 WORKDIR /app
 COPY --from=build /app/publish .
 
+USER $APP_UID
+
 ENTRYPOINT ["dotnet", "backend.dll"]
 

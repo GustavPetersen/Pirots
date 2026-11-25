@@ -1,4 +1,6 @@
 using System.Reflection;
+using System.Threading.RateLimiting;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.OpenApi;
 using backend.converters;
 using backend.data;
@@ -53,6 +55,28 @@ builder.Services.AddCors(options =>
     });
 });
 
+// Trust X-Forwarded-For/Proto from the reverse proxy (Caddy). The api container is only
+// reachable on the internal compose network, and Caddy overwrites client-supplied XFF.
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+    options.KnownProxies.Clear();
+    options.KnownIPNetworks.Clear();
+});
+
+// Per-IP rate limit for auth endpoints.
+builder.Services.AddRateLimiter(options =>
+{
+    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+    options.AddPolicy("auth", context => RateLimitPartition.GetFixedWindowLimiter(
+        context.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+        _ => new FixedWindowRateLimiterOptions
+        {
+            PermitLimit = 10,
+            Window = TimeSpan.FromMinutes(1)
+        }));
+});
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
@@ -94,6 +118,8 @@ if (app.Environment.IsDevelopment())
 
     app.UseCors("DevCorsPolicy");
 }
+
+app.UseRateLimiter();
 
 app.UseAuthentication();
 app.UseAuthorization();
