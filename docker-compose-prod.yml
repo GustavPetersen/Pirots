@@ -29,6 +29,7 @@ services:
       target: production
       args:
         VITE_API_URL: /api
+    depends_on: [api]
     restart: unless-stopped
 
   proxy:

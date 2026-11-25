@@ -5,6 +5,6 @@ import { defineConfig } from 'vite'
 export default defineConfig({
   plugins: [react()],
   preview: {
-    allowedHosts: ['pirots.goofyahh.dk'],
+    allowedHosts: ['pirots.walkablecity.app'],
   },
 })
