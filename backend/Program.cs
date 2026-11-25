@@ -1,4 +1,6 @@
 using System.Reflection;
+using System.Threading.RateLimiting;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.OpenApi;
 using backend.converters;
 using backend.data;
@@ -41,9 +43,9 @@ builder.Services.AddControllers().AddJsonOptions(options =>
     options.JsonSerializerOptions.Converters.Add(new SymbolJsonConverter());
 });
 
-builder.Services.AddCors(options => // TODO: Actually consider proper COORS policy
+builder.Services.AddCors(options =>
 {
-    options.AddPolicy("CustomCorsPolicy", policy =>
+    options.AddPolicy("DevCorsPolicy", policy =>
     {
         policy
             .WithOrigins("http://localhost:5173")
@@ -51,6 +53,28 @@ builder.Services.AddCors(options => // TODO: Actually consider proper COORS poli
             .AllowAnyMethod()
             .AllowCredentials();
     });
+});
+
+// Trust X-Forwarded-For/Proto from the reverse proxy (Caddy). The api container is only
+// reachable on the internal compose network, and Caddy overwrites client-supplied XFF.
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+    options.KnownProxies.Clear();
+    options.KnownIPNetworks.Clear();
+});
+
+// Per-IP rate limit for auth endpoints.
+builder.Services.AddRateLimiter(options =>
+{
+    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+    options.AddPolicy("auth", context => RateLimitPartition.GetFixedWindowLimiter(
+        context.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+        _ => new FixedWindowRateLimiterOptions
+        {
+            PermitLimit = 10,
+            Window = TimeSpan.FromMinutes(1)
+        }));
 });
 
 builder.Services.AddEndpointsApiExplorer();
@@ -85,14 +109,17 @@ if (app.Environment.IsDevelopment())
     {
         options.OpenApiVersion = OpenApiSpecVersion.OpenApi3_0;
     });
+
     app.UseSwaggerUI(options =>
     {
         options.SwaggerEndpoint("/swagger/v1/swagger.json", "GoofyAhh API v1");
         options.RoutePrefix = "";
     });
+
+    app.UseCors("DevCorsPolicy");
 }
 
-app.UseCors("CustomCorsPolicy");
+app.UseRateLimiter();
 
 app.UseAuthentication();
 app.UseAuthorization();

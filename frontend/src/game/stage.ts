@@ -1,3 +1,4 @@
+import "pixi.js/unsafe-eval"; // Misleading name. Stops pixi.js from using unsafe evals that violate our CSP
 import { QueryClient } from "@tanstack/react-query";
 import { Application, Sprite, Assets } from "pixi.js";
 import { Howl } from "howler";
