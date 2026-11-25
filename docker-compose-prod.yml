@@ -27,9 +27,8 @@ services:
     build:
       context: ./frontend
       target: production
-    environment:
-      - VITE_API_URL=https://pirots.goofyahh.dk/api
-    depends_on: [api]
+      args:
+        VITE_API_URL: /api
     restart: unless-stopped
 
   proxy:
@@ -37,6 +36,7 @@ services:
     build:
       context: ./proxy
       target: production
+    depends_on: [web, api]
     restart: unless-stopped
     ports:
       - "80:80"

@@ -10,12 +10,10 @@
 
 	@api path /api /api/*
 	handle @api {
-		reverse_proxy api:8080
+		reverse_proxy api:3000
 	}
 
 	handle {
-		root * /srv
-		try_files {path} /index.html
-		file_server
+		reverse_proxy web:4173
 	}
 }
