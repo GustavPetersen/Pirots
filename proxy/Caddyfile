@@ -1,11 +1,7 @@
-{
-	servers {
-		trusted_proxies static private_ranges
-		client_ip_headers CF-Connecting-IP X-Forwarded-For
-	}
-}
+pirots.goofyahh.dk {
+	# Self-signed cert from Caddy's internal CA, stored in /data (caddy_data volume)
+	tls internal
 
-:80 {
 	encode gzip zstd
 
 	@api path /api /api/*
