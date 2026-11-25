@@ -69,7 +69,7 @@ Requires Docker. Note that the below commands are exactly equal to the ones from
 cp .env.dev.example .env
 docker compose -f docker-compose-dev.yml up --build --watch
 ```
-The API runs at http://localhost:3000. Check it with `curl localhost:3000/api/health`.
+The API runs at http://localhost:8080. Check it with `curl localhost:8080/api/health`.
 Changes to files under the backend/ directory are immediately synced to the container and hot reloaded.
 
 #### Commands
