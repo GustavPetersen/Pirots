@@ -1,11 +1,11 @@
 # Upgrade every plain HTTP request to HTTPS on the domain.
 http:// {
-	redir https://pirots.walkablecity.app{uri} permanent
+	redir https://pirots.goofyahh.dk{uri} permanent
 }
 
 # Caddy automatically obtains and renews a certificate (though Let's Encrypt) 
 # for this domain and stores it in /data (in the caddy_data volume).
-pirots.walkablecity.app {
+pirots.goofyahh.dk {
 	encode gzip zstd
 
 	header {
