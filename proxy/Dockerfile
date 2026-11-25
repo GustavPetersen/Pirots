@@ -1,2 +1,3 @@
-FROM caddy:2-alpine AS production
+
+FROM caddy:latest AS production
 COPY Caddyfile /etc/caddy/Caddyfile

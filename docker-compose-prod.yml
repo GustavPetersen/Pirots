@@ -5,42 +5,49 @@ services:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB_NAME} 
-    network: dokploy-network
+    restart: unless-stopped
     volumes:
-      - pg_volume:/var/lib/postgresql/data
+      - pg_data:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB_NAME}"]
       interval: 5s
 
   api:
+    image: 21philip/pirots-api:latest
     build:
       context: ./backend
       target: production
     environment:
       ConnectionStrings__Default: Host=db;Port=5432;Database=${POSTGRES_DB_NAME};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}
-    depends_on: db
+    depends_on: [db]
     restart: unless-stopped
-    network: dokploy-network
 
   web:
+    image: 21philip/pirots-web:latest
     build:
       context: ./frontend
       target: production
-    depends_on: api
+      args:
+        VITE_API_URL: /api
+    depends_on: [api]
     restart: unless-stopped
-    network: dokploy-network
 
-  caddy:
-    image: caddy:latest
+  proxy:
+    image: 21philip/pirots-proxy:latest
+    build:
+      context: ./proxy
+      target: production
+    depends_on: [web, api]
     restart: unless-stopped
     ports:
       - "80:80"
       - "443:443"
       - "443:443/udp"
-
-networks:
-  dokploy-network:
-    external: true
+    volumes:
+      - caddy_data:/data
+      - caddy_config:/config
 
 volumes:
-  pg_volume:
+  pg_data:
+  caddy_data:
+  caddy_config:

@@ -69,7 +69,7 @@ Requires Docker. Note that the below commands are exactly equal to the ones from
 cp .env.dev.example .env
 docker compose -f docker-compose-dev.yml up --build --watch
 ```
-The API runs at http://localhost:3000. Check it with `curl localhost:3000/api/health`.
+The API runs at http://localhost:8080. Check it with `curl localhost:8080/api/health`.
 Changes to files under the backend/ directory are immediately synced to the container and hot reloaded.
 
 #### Commands
@@ -107,3 +107,21 @@ cp .env.prod.example .env
 docker compose -f docker-compose-prod.yml up --build
 ```
 Again these commands are equal to the ones from the frontend, due to docker-compose-prod.yml also orchestrating the entire system. 
+
+### Deployment (temp)
+On local system:
+```bash
+docker compose -f docker-compose-prod.yml build
+docker compose -f docker-compose-prod.yml push
+```
+If changes has been made to docker-compose-prod:
+```bash
+scp docker-compose-prod.yml ubuntu@3.123.225.219:/home/ubuntu/app
+```
+On server:
+```bash
+docker compose -f docker-compose-prod.yml pull
+docker compose -f docker-compose-prod.yml up
+```
+
+

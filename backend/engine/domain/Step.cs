@@ -1,3 +1,3 @@
 namespace backend.engine.domain;
 
-public record Step(int Tile, double Payout);
+public record Step(int Tile, decimal Payout);

@@ -173,6 +173,19 @@ namespace backend.data.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("Wallet", b =>
+                {
+                    b.Property<string>("UserId")
+                        .HasColumnType("text");
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("numeric");
+
+                    b.HasKey("UserId");
+
+                    b.ToTable("Wallets");
+                });
+
             modelBuilder.Entity("backend.data.AppUser", b =>
                 {
                     b.Property<string>("Id")
@@ -285,6 +298,23 @@ namespace backend.data.Migrations
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Wallet", b =>
+                {
+                    b.HasOne("backend.data.AppUser", "User")
+                        .WithOne("Wallet")
+                        .HasForeignKey("Wallet", "UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("backend.data.AppUser", b =>
+                {
+                    b.Navigation("Wallet")
                         .IsRequired();
                 });
 #pragma warning restore 612, 618

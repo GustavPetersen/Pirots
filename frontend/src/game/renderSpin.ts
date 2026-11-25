@@ -1,18 +1,12 @@
-import { QueryClient } from '@tanstack/react-query';
-import { type SpinResult, type SlotSymbol, } from '../utils/types';
-import { Container, Sprite, } from 'pixi.js';
-import { getSpin } from '../api/game';
-import { BOARD_WIDTH, BOARD_HEIGHT, sleep, getSymbolTexture, PRISONERS, } from '../utils/constants';
+import { type SpinResult, type SlotSymbol, } from "../utils/types";
+import { Container, Sprite, Text } from "pixi.js";
+import { BOARD_WIDTH, BOARD_HEIGHT, sleep, getSymbolTexture, PRISONERS, } from "../utils/constants";
 
-export async function spin(sprites: Container, qc: QueryClient) {
-
-    const spinResult: SpinResult = await qc.query({
-        queryKey: ["getSpin"],
-        queryFn: getSpin(6, 60),
-    });
-
+export async function renderSpin(stage: Container, spinResult: SpinResult) {
     const ms = 700;
     const board: SlotSymbol[] = new Array(BOARD_WIDTH * BOARD_HEIGHT).fill("empty");
+    const payoutLabel = stage.getChildByLabel("payoutLabel")! as Text;
+    payoutLabel.text = "Payout: 0";
 
     while (!spinResult.symbolReel.isEmpty()) {
         // Fill board
@@ -20,7 +14,7 @@ export async function spin(sprites: Container, qc: QueryClient) {
             if (symbol === "empty") board[i] = spinResult.symbolReel.popFront()!;
         });
 
-        await drawBoard(sprites, board, ms);
+        await drawBoard(stage, board, ms);
 
         // Walk prisoners
         for (var _ = 0; _ < PRISONERS.length; _++) {
@@ -35,10 +29,14 @@ export async function spin(sprites: Container, qc: QueryClient) {
                 const prevStep = walk[i - 1];
                 const curStep = walk[i];
 
-                getSpriteAt(sprites, prevStep.tile).texture = emptyTexture;
+                getSpriteAtTile(stage, prevStep.tile).texture = emptyTexture;
                 board[prevStep.tile] = "empty";
-                getSpriteAt(sprites, curStep.tile).texture = pTexture;
+                getSpriteAtTile(stage, curStep.tile).texture = pTexture;
                 board[curStep.tile] = pSymbol;
+
+                const curPayoutLabel = payoutLabel.text;
+                const updatedPayoutLabel = Number(curPayoutLabel.split(" ")[1]) + curStep.payout;
+                payoutLabel.text = "Payout: " + updatedPayoutLabel.toFixed(1);
 
                 await sleep(ms);
             }
@@ -57,20 +55,24 @@ export async function spin(sprites: Container, qc: QueryClient) {
             board[tile] = "empty";
         }
 
-        await drawBoard(sprites, board, ms);
+        await drawBoard(stage, board, ms);
     }
 }
 
-async function drawBoard(sprites: Container, board: SlotSymbol[], ms: number) {
+async function drawBoard(stage: Container, board: SlotSymbol[], ms: number) {
     board.forEach((symbol, i) => {
-        getSpriteAt(sprites, i).texture = getSymbolTexture(symbol);
+        getSpriteAtTile(stage, i).texture = getSymbolTexture(symbol);
     });
     await sleep(ms);
 }
 
-function getSpriteAt(sprites: Container, idx: number): Sprite {
-    const tile = sprites.getChildAt<Container>(idx);
+function getSpriteAtTile(stage: Container, idx: number): Sprite {
+    const board = stage.getChildByLabel("board");
+    const middleTiles = board!.getChildByLabel("middleTiles");
+    const tile = middleTiles!.getChildAt<Container>(idx);
+
     const sprite = tile.getChildByLabel("tile_fg") as Sprite | null;
     if (!sprite) throw new Error(`No tile_fg at ${idx}`);
+
     return sprite;
 }

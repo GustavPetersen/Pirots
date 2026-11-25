@@ -1,17 +1,19 @@
-:80 {
+# Upgrade every plain HTTP request to HTTPS on the domain.
+http:// {
+	redir https://pirots.walkablecity.app{uri} permanent
+}
+
+# Caddy automatically obtains and renews a certificate (though Let's Encrypt) 
+# for this domain and stores it in /data (in the caddy_data volume).
+pirots.walkablecity.app {
 	encode gzip zstd
 
-	handle /auth/* {
-		reverse_proxy api:8080
-	}
-
-	handle /game/* {
+	@api path /api /api/*
+	handle @api {
 		reverse_proxy api:8080
 	}
 
 	handle {
-		root * /srv
-		try_files {path} /index.html
-		file_server
+		reverse_proxy web:4173
 	}
 }
