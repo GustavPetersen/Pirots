@@ -36,7 +36,7 @@ export async function renderSpin(stage: Container, spinResult: SpinResult) {
 
                 const curPayoutLabel = payoutLabel.text;
                 const updatedPayoutLabel = Number(curPayoutLabel.split(" ")[1]) + curStep.payout;
-                payoutLabel.text = "Payout: " + updatedPayoutLabel.toFixed(1);
+                payoutLabel.text = "Payout: " + updatedPayoutLabel.toFixed(2);
 
                 await sleep(ms);
             }
