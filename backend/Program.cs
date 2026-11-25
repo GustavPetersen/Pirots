@@ -41,9 +41,9 @@ builder.Services.AddControllers().AddJsonOptions(options =>
     options.JsonSerializerOptions.Converters.Add(new SymbolJsonConverter());
 });
 
-builder.Services.AddCors(options => // TODO: Actually consider proper COORS policy
+builder.Services.AddCors(options =>
 {
-    options.AddPolicy("CustomCorsPolicy", policy =>
+    options.AddPolicy("DevCorsPolicy", policy =>
     {
         policy
             .WithOrigins("http://localhost:5173")
@@ -85,14 +85,15 @@ if (app.Environment.IsDevelopment())
     {
         options.OpenApiVersion = OpenApiSpecVersion.OpenApi3_0;
     });
+
     app.UseSwaggerUI(options =>
     {
         options.SwaggerEndpoint("/swagger/v1/swagger.json", "GoofyAhh API v1");
         options.RoutePrefix = "";
     });
-}
 
-app.UseCors("CustomCorsPolicy");
+    app.UseCors("DevCorsPolicy");
+}
 
 app.UseAuthentication();
 app.UseAuthorization();
