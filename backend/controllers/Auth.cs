@@ -1,6 +1,8 @@
 namespace backend.controllers;
 
+using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using backend.dtos;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -10,20 +12,22 @@ using backend.data;
 /// Controller for auth requests
 /// </summary>
 [ApiController]
-[Route("auth")]
+[Route("api/auth")]
 [Produces("application/json")]
 public class AuthController : ControllerBase
 {
     private readonly UserManager<AppUser> _userManager;
     private readonly SignInManager<AppUser> _signInManager;
+    private readonly AppDbContext _dbContext;
 
     /// <summary>
     /// ...
     /// </summary>
-    public AuthController(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager)
+    public AuthController(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, AppDbContext dbContext)
     {
         _userManager = userManager;
         _signInManager = signInManager;
+        _dbContext = dbContext;
     }
 
     /// <summary>
@@ -33,6 +37,7 @@ public class AuthController : ControllerBase
     /// <returns> ... </returns>
     [HttpPost]
     [Route("login")]
+    [EnableRateLimiting("auth")]
     public async Task<IActionResult> Login(LoginRequest req)
     {
         var result = await _signInManager.PasswordSignInAsync(
@@ -61,11 +66,13 @@ public class AuthController : ControllerBase
     /// <returns> ... </returns>
     [HttpPost]
     [Route("signup")]
+    [EnableRateLimiting("auth")]
     public async Task<IActionResult> SignUp(SignUpRequest req)
     {
         AppUser newUser = new()
         {
-            UserName = req.UserName
+            UserName = req.UserName,
+            Wallet = new Wallet()
         };
 
         var result = await _userManager.CreateAsync(newUser, req.Password);
@@ -91,13 +98,18 @@ public class AuthController : ControllerBase
     [Route("me")]
     public async Task<IActionResult> Me()
     {
-        AppUser? curUser = await _userManager.GetUserAsync(User);
-        if (curUser is null)
+        string? userId = _userManager.GetUserId(User);
+        MeResult? me = await _dbContext.Users
+            .Where(u => u.Id == userId)
+            .Select(u => new MeResult(u.UserName!, u.Wallet.Amount))
+            .SingleOrDefaultAsync();
+
+        if (me is null)
         {
             await _signInManager.SignOutAsync(); // Invalidate the session
             return Unauthorized();
         }
 
-        return Ok(curUser.UserName);
+        return Ok(me);
     }
 }

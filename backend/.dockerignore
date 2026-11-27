@@ -1,0 +1,12 @@
+# Build output from the host; the image runs its own restore/publish
+bin
+obj
+
+# Secrets
+.env
+.env.*
+
+# Misc
+*.log
+Dockerfile
+.dockerignore

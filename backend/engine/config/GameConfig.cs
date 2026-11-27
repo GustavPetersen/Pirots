@@ -6,12 +6,12 @@ public static class GameConfig
 {
     public static readonly int xDim = 6;
     public static readonly int yDim = 6;
-    public static readonly Dictionary<Color, double> colorBaseMultiplier = new()
+    public static readonly Dictionary<Color, decimal> colorBaseMultiplier = new()
     {
-        [Color.Green] = 0.1,
-        [Color.Blue] = 0.2,
-        [Color.Orange] = 0.25,
-        [Color.Red] = 0.3
+        [Color.Green] = 0.1m,
+        [Color.Blue] = 0.2m,
+        [Color.Orange] = 0.25m,
+        [Color.Red] = 0.3m
     };
 
     public static readonly Dictionary<Color, string> colorString = new()

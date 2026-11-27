@@ -110,7 +110,7 @@ public class SpinSimulation
         Stack<int> stack = [];
 
         int start = pPlacements[color];
-        double baseMulti = GameConfig.colorBaseMultiplier[color];
+        decimal baseMulti = GameConfig.colorBaseMultiplier[color];
 
         walk.Add(new(start, 0));
         stack.Push(start);
@@ -125,8 +125,8 @@ public class SpinSimulation
                     && d.Color == color
                     && !walk.Any(step => step.Tile == adjTile)) // O(n) lookup, but n is small
                 {
-                    double effectiveMulti = baseMulti * d.Level;
-                    double payout = effectiveMulti * bet;
+                    decimal effectiveMulti = baseMulti * d.Level;
+                    decimal payout = effectiveMulti * bet;
                     Step step = new(adjTile, payout);
 
                     walk.Add(step);

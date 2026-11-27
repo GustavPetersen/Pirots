@@ -9,7 +9,7 @@ COPY . .
 
 ENV ASPNETCORE_ENVIRONMENT=Development
 
-ENTRYPOINT ["dotnet", "run", "--no-launch-profile", "--urls", "http://0.0.0.0:3000"]
+ENTRYPOINT ["dotnet", "run", "--no-launch-profile"]
 
 FROM base AS build
 COPY . .
@@ -19,5 +19,7 @@ FROM mcr.microsoft.com/dotnet/aspnet:10.0-alpine AS production
 WORKDIR /app
 COPY --from=build /app/publish .
 
-ENTRYPOINT ["dotnet", "backend.dll", "--urls", "http://0.0.0.0:3000"]
+USER $APP_UID
+
+ENTRYPOINT ["dotnet", "backend.dll"]
 
