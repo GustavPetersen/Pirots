@@ -25,7 +25,7 @@ public record Diamond(Color Color, int Level) : Symbol
     public int Level { get; set; } = Level;
     public override string Name
     {
-        get => $"d_{GameConfig.colorString[Color]}";
+        get => $"d_{GameConfig.colorString[Color]}_{Level}";
         set { }
     }
 }
@@ -36,6 +36,15 @@ public record Prisoner(Color Color) : Symbol
     public override string Name
     {
         get => $"p_{GameConfig.colorString[Color]}";
+        set { }
+    }
+}
+
+public record Multiplier() : Symbol
+{
+    public override string Name
+    {
+        get => "multiplier";
         set { }
     }
 }

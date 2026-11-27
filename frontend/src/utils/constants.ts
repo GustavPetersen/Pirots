@@ -4,7 +4,7 @@ import type { PrisonerStep, SlotSymbol } from "./types";
 import { Queue } from "./queue";
 
 export const PRISONERS = ["p_green", "p_blue", "p_red", "p_orange"] as const;
-export const ALL_SYMBOLS = [...PRISONERS, "empty", "d_green", "d_blue", "d_red", "d_orange"] as const
+export const ALL_SYMBOLS = [...PRISONERS, "empty", "d_green_1", "d_green_2", "d_green_3", "d_green_4", "d_blue_1", "d_blue_2", "d_blue_3", "d_blue_4", "d_orange_1", "d_orange_2", "d_orange_3", "d_orange_4", "d_red_1", "d_red_2", "d_red_3", "d_red_4", "multiplier"] as const
 
 export const SLOT_SYMBOL_SCHEMA = z.enum(ALL_SYMBOLS);
 

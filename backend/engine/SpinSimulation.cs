@@ -3,6 +3,7 @@ namespace backend.engine;
 using backend.engine.domain;
 using backend.engine.config;
 using backend.dtos;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 
 /// <summary>
 /// Holds the running state of a single spin. Create a new instance per spin.
@@ -16,6 +17,13 @@ public class SpinSimulation
     private readonly Dictionary<Color, int> pPlacements = [];
     private readonly List<List<Step>> pWalks = [];
     private readonly List<Symbol> symbolReel = [];
+    private readonly Dictionary<Color, int> diamondLevels = new ()
+    {
+        {Color.Blue, 1},
+        {Color.Green, 1},
+        {Color.Orange, 1},
+        {Color.Red, 1},
+    };
 
     public SpinSimulation(int bet, Random? random = null)
     {
@@ -32,7 +40,7 @@ public class SpinSimulation
         {
             Dictionary<int, Symbol> boardChanges = []; // tile -> updated symbol
 
-            FillDiamonds(boardChanges);
+            FillSymbols(boardChanges);
             FillPrisoners(boardChanges);
             symbolReel.AddRange(boardChanges.Values);
 
@@ -44,13 +52,18 @@ public class SpinSimulation
         return new SpinResult(symbolReel, pWalks);
     }
 
-    private void FillDiamonds(Dictionary<int, Symbol> boardChanges)
+    private void FillSymbols(Dictionary<int, Symbol> boardChanges)
     {
         for (int tile = 0; tile < board.Length; tile++)
         {
             if (board[tile] is not Empty) continue;
 
-            Diamond symbol = new(colors[random.Next(colors.Length)], 1);
+            Symbol symbol = random.Next(100) switch
+            {
+                > 90 => new Multiplier(),
+                _ => CreateDiamond(),
+            };
+
             board[tile] = symbol;
             boardChanges.Add(tile, symbol);
         }
@@ -121,17 +134,31 @@ public class SpinSimulation
 
             foreach (int adjTile in Adjacent(curTile))
             {
-                if (board[adjTile] is Diamond d
-                    && d.Color == color
-                    && !walk.Any(step => step.Tile == adjTile)) // O(n) lookup, but n is small
-                {
-                    decimal effectiveMulti = baseMulti * d.Level;
-                    decimal payout = effectiveMulti * bet;
-                    Step step = new(adjTile, payout);
+                // && !walk.Any(step => step.Tile == adjTile)) // O(n) lookup, but n is small
 
-                    walk.Add(step);
-                    stack.Push(adjTile);
-                }
+                Step step = null!;
+
+                switch (board[adjTile])
+                {   
+                    case Symbol when walk.Any(step => step.Tile == adjTile):
+                        break;
+                    case Diamond d when d.Color == color:
+                        decimal effectiveMulti = baseMulti * d.Level;
+                        decimal payout = effectiveMulti * bet;
+                        step = new(adjTile, payout);
+                        break;
+                    case Multiplier m:
+                        step = new (adjTile, 0);
+                        diamondLevels[color] = Math.Min(diamondLevels[color] + 1, 4);
+                        break;
+                    default:
+                        break;
+                };
+
+                if (step is null) continue;
+
+                walk.Add(step);
+                stack.Push(adjTile);
             }
         }
 
@@ -154,5 +181,11 @@ public class SpinSimulation
         if (tile < size - width) yield return tile + width; // down
         if (xCoord > 0) yield return tile - 1;              // left
         if (xCoord < width - 1) yield return tile + 1;      // right
+    }
+
+    private Diamond CreateDiamond()
+    {
+        Color color = colors[random.Next(colors.Length)];
+        return new Diamond(color, diamondLevels[color]);
     }
 }
